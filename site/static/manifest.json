@@ -1,0 +1,61 @@
+{
+  "name": "карточка Ai",
+  "short_name": "карточка Ai",
+  "description": "ИИ-генератор карточек для Wildberries, Ozon и Яндекс Маркет: загрузи фото — получи пак готовых карточек за 2 минуты",
+  "lang": "ru-RU",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "id": "/?source=pwa",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#F4F2FA",
+  "theme_color": "#4C29D3",
+  "categories": ["business", "productivity", "shopping"],
+  "icons": [
+    {
+      "src": "/static/assets/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/static/assets/favicon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Создать карточку",
+      "short_name": "Создать",
+      "description": "Загрузить фото товара и сгенерировать пак карточек",
+      "url": "/?source=pwa-shortcut",
+      "icons": [
+        { "src": "/static/assets/favicon.png", "sizes": "32x32" }
+      ]
+    },
+    {
+      "name": "Профиль",
+      "short_name": "Профиль",
+      "url": "/profile?source=pwa-shortcut",
+      "icons": [
+        { "src": "/static/assets/favicon.png", "sizes": "32x32" }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}

@@ -1,0 +1,689 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#4C29D3">
+<title>Профиль · карточка Ai</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="/static/assets/favicon.png"><link rel="shortcut icon" href="/static/assets/favicon.ico"><link rel="apple-touch-icon" href="/static/assets/logo.png">
+<link rel="manifest" href="/static/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="карточка Ai">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #F4F2FA;
+    --c-violet-deep: #4C29D3; --c-violet-soft: #8A7FE9;
+    --c-rose: #E06F93; --c-mint: #62BFA4; --c-amber: #F2B054;
+    --glass-1: rgba(255,255,255,0.45); --glass-2: rgba(255,255,255,0.6);
+    --glass-3: rgba(255,255,255,0.75); --glass-4: rgba(255,255,255,0.9);
+    --glass-border: rgba(255,255,255,0.7);
+    --text: #1F1A35; --text-muted: rgba(31,26,53,0.72);
+    --text-dim: rgba(31,26,53,0.55);
+    --accent: #4C29D3; --accent-bright: #6B4FE0;
+    --accent-soft: #8A7FE9; --accent-glass: rgba(76,41,211,0.12);
+    --danger: #D94560; --danger-glass: rgba(217,69,96,0.1);
+    --shadow-glass: 0 8px 32px rgba(60,50,110,0.12), 0 2px 8px rgba(60,50,110,0.06);
+    --inner-light: inset 0 1px 0 rgba(255,255,255,0.85), 0 0 0 1px rgba(60,50,110,0.04);
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg-base); color: var(--text);
+    font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased; min-height: 100dvh; overflow-x: hidden; }
+  .bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    background: radial-gradient(ellipse at 30% 20%, #EDE5FB 0%, transparent 55%),
+                radial-gradient(ellipse at 70% 80%, #F8E5EE 0%, transparent 60%), var(--bg-base); }
+  .blob { position: absolute; border-radius: 50%; filter: blur(110px); }
+  .blob-1 { width: 520px; height: 520px; background: var(--c-violet-soft); top: -120px; left: -160px; opacity: 0.38; }
+  .blob-2 { width: 460px; height: 460px; background: var(--c-rose); bottom: -120px; right: -120px; opacity: 0.32; }
+  .wrap { position: relative; z-index: 2; }
+  .topnav { position: sticky; top: 14px; z-index: 50; max-width: 1080px; margin: 14px auto 0; padding: 0 14px; }
+  .topnav-inner { background: var(--glass-3); backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--glass-border); border-radius: 22px;
+    padding: 11px 18px; display: flex; align-items: center; gap: 14px;
+    box-shadow: var(--shadow-glass), var(--inner-light); }
+  .nav-back { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 12px;
+    color: var(--text-muted); text-decoration: none; font-size: 13.5px; font-weight: 500; transition: all 180ms; }
+  .nav-back:hover { background: var(--glass-1); color: var(--text); }
+  .nav-admin { margin-left: auto; }
+  .nav-logo { font-family: var(--font-display); font-size: 17px; font-weight: 500;
+    color: var(--text); text-decoration: none; margin-left: 14px; }
+  .nav-logo em { font-style: italic; color: var(--accent); }
+  .nav-pill { display:inline-flex; align-items:center; gap:6px; padding:8px 13px; border-radius:11px;
+    background: var(--accent-glass); color: var(--accent); text-decoration:none; font-size:12.5px; font-weight:700; }
+  .container { max-width: 1080px; margin: 28px auto 60px; padding: 0 28px; }
+
+  .hello-card { background: linear-gradient(135deg, rgba(76,41,211,0.97), rgba(138,127,233,0.92));
+    color: white; border-radius: 28px; padding: 30px 36px; display: grid;
+    grid-template-columns: auto 1fr auto; align-items: center; gap: 26px;
+    box-shadow: 0 20px 50px rgba(76,41,211,0.32); position: relative; overflow: hidden; margin-bottom: 22px; }
+  .hello-card::before { content: ''; position: absolute; top: -40%; right: -10%; width: 50%; height: 180%;
+    background: radial-gradient(circle, rgba(224,111,147,0.35), transparent 60%); filter: blur(40px); pointer-events: none; }
+  .avatar-big { width: 60px; height: 60px; border-radius: 50%; background: white; color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-display);
+    font-size: 24px; font-weight: 500; box-shadow: 0 6px 18px rgba(0,0,0,0.18); flex-shrink: 0; position: relative; z-index: 1; }
+  .hello-text { position: relative; z-index: 1; min-width: 0; }
+  .hello-greeting { font-family: var(--font-display); font-weight: 400; font-size: 24px; letter-spacing: -0.01em; margin-bottom: 2px; }
+  .hello-greeting em { font-style: italic; }
+  .hello-email { font-size: 13px; opacity: 0.78; }
+  .balance-bubble { position: relative; z-index: 1; text-align: right; padding-left: 26px; border-left: 1px solid rgba(255,255,255,0.18); }
+  .balance-bubble-label { font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.72; margin-bottom: 4px; }
+  .balance-bubble-num { font-family: var(--font-display); font-weight: 500; font-size: 46px; line-height: 1; letter-spacing: -0.02em; }
+  .balance-bubble-sub { font-size: 12.5px; opacity: 0.82; margin-top: 5px; }
+  @media (max-width: 720px) {
+    .hello-card { grid-template-columns: 1fr; text-align: center; padding: 26px 22px; }
+    .avatar-big { margin: 0 auto; }
+    .balance-bubble { text-align: center; padding-left: 0; border-left: none; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.18); }
+  }
+  .pcard { background: var(--glass-3); backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border); border-radius: 22px; padding: 24px;
+    box-shadow: var(--shadow-glass), var(--inner-light); margin-bottom: 22px; }
+  .pcard-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+  .pcard-title { font-family: var(--font-display); font-weight: 500; font-size: 19px; letter-spacing: -0.01em; color: var(--text); }
+  .pcard-sub { font-size: 12.5px; color: var(--text-dim); margin-top: 2px; }
+  .pcard-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 500; color: var(--accent);
+    letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+  @media (max-width: 760px) { .grid-3 { grid-template-columns: 1fr; } }
+  .stat-card { background: var(--glass-3); backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px 22px; box-shadow: var(--shadow-glass), var(--inner-light); }
+  .stat-num { font-family: var(--font-display); font-weight: 500; font-size: 28px; letter-spacing: -0.02em; color: var(--text); line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 12.5px; color: var(--text-muted); }
+  .slider-wrap { background: linear-gradient(180deg, rgba(76,41,211,0.05), rgba(138,127,233,0.03));
+    border: 1px solid rgba(76,41,211,0.12); border-radius: 18px; padding: 22px; margin-bottom: 18px; }
+  .slider-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; gap: 16px; flex-wrap: wrap; }
+  .slider-big { font-family: var(--font-display); font-weight: 500; font-size: 38px; line-height: 1; color: var(--accent); letter-spacing: -0.02em; }
+  .slider-big small { font-size: 16px; color: var(--text-muted); font-family: var(--font-body); }
+  .slider-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .slider-price { text-align: right; }
+  .slider-price-amt { font-family: var(--font-display); font-weight: 500; font-size: 32px; color: var(--text); letter-spacing: -0.02em; line-height: 1; }
+  .slider-price-per { font-size: 11.5px; color: var(--text-dim); font-family: var(--font-mono); margin-top: 5px; }
+  .slider-save { display: inline-block; margin-top: 6px; font-size: 10.5px; font-weight: 700; color: white;
+    background: var(--c-mint); padding: 2px 9px; border-radius: 100px; letter-spacing: 0.04em; }
+  input[type=range].trange { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 100px;
+    background: linear-gradient(90deg, var(--accent) var(--fill,30%), rgba(76,41,211,0.15) var(--fill,30%)); outline: none; }
+  input[type=range].trange::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 26px; height: 26px;
+    border-radius: 50%; background: white; border: 3px solid var(--accent); cursor: pointer; box-shadow: 0 4px 12px rgba(76,41,211,0.35); }
+  input[type=range].trange::-moz-range-thumb { width: 26px; height: 26px; border-radius: 50%; background: white;
+    border: 3px solid var(--accent); cursor: pointer; box-shadow: 0 4px 12px rgba(76,41,211,0.35); }
+  .slider-ticks { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-dim); font-family: var(--font-mono); margin-top: 8px; }
+  .slider-presets { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .slider-preset { padding: 7px 14px; border-radius: 100px; border: 1px solid var(--glass-border);
+    background: var(--glass-1); font-size: 12.5px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 160ms; font-family: inherit; }
+  .slider-preset:hover { border-color: var(--accent-soft); color: var(--text); }
+  .slider-preset.active { background: var(--accent-glass); border-color: var(--accent); color: var(--accent); }
+  .refill-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 880px) { .refill-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 460px) { .refill-grid { grid-template-columns: 1fr; } }
+  .refill-pack { text-decoration: none; display: flex; flex-direction: column; gap: 4px; padding: 18px 16px; border-radius: 16px;
+    background: var(--glass-1); border: 1px solid var(--glass-border); transition: all 220ms cubic-bezier(0.22,1,0.36,1); position: relative; cursor: pointer; }
+  .refill-pack:hover { transform: translateY(-3px); background: var(--glass-3); border-color: var(--accent-soft); box-shadow: 0 10px 24px rgba(76,41,211,0.18); }
+  .refill-pack.featured { background: linear-gradient(180deg, rgba(76,41,211,0.95), rgba(60,30,180,0.92)); color: white; border-color: rgba(255,255,255,0.18); box-shadow: 0 14px 32px rgba(76,41,211,0.35); }
+  .refill-name { font-family: var(--font-display); font-weight: 500; font-size: 17px; color: var(--text); letter-spacing: -0.01em; }
+  .refill-pack.featured .refill-name { color: white; }
+  .refill-cards { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+  .refill-pack.featured .refill-cards { color: rgba(255,255,255,0.78); }
+  .refill-price { margin-top: auto; font-family: var(--font-display); font-weight: 500; font-size: 22px; color: var(--text); letter-spacing: -0.01em; line-height: 1.1; }
+  .refill-pack.featured .refill-price { color: white; }
+  .refill-per { font-size: 11px; color: var(--text-dim); margin-top: 2px; font-family: var(--font-mono); }
+  .refill-pack.featured .refill-per { color: rgba(255,255,255,0.65); }
+  .refill-badge-top { position: absolute; top: -8px; right: 12px; background: linear-gradient(135deg, var(--c-amber), var(--c-rose));
+    color: white; font-weight: 700; font-size: 9px; padding: 4px 9px; border-radius: 100px; letter-spacing: 0.06em; text-transform: uppercase; box-shadow: 0 4px 12px rgba(224,111,147,0.4); }
+  .grid-promo-ref { display: grid; grid-template-columns: 1fr 1.4fr; gap: 16px; margin-bottom: 22px; }
+  @media (max-width: 880px) { .grid-promo-ref { grid-template-columns: 1fr; } }
+  .promo-row { display: flex; gap: 8px; }
+  .promo-input { flex: 1; padding: 11px 14px; background: var(--glass-1); border: 1px solid var(--glass-border);
+    border-radius: 10px; font-size: 13.5px; color: var(--text); font-family: var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; transition: all 180ms; }
+  .promo-input:focus { outline: none; border-color: var(--accent); background: white; box-shadow: 0 0 0 3px var(--accent-glass); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 18px; border-radius: 11px;
+    font-size: 13.5px; font-weight: 600; text-decoration: none; cursor: pointer; border: 1px solid transparent; transition: all 200ms; font-family: inherit; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent-bright), var(--accent)); color: white; border-color: rgba(255,255,255,0.3); box-shadow: 0 6px 18px rgba(76,41,211,0.3); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(76,41,211,0.4); }
+  .btn-primary:disabled { opacity: 0.6; cursor: default; transform: none; }
+  .btn-secondary { background: var(--glass-2); color: var(--text); border-color: var(--glass-border); }
+  .btn-secondary:hover { background: var(--glass-4); }
+  .btn-danger { background: transparent; color: var(--danger); border-color: rgba(217,69,96,0.3); }
+  .btn-danger:hover { background: var(--danger-glass); }
+  .btn-block { width: 100%; }
+  .ref-link-row { display: flex; gap: 8px; align-items: center; background: var(--glass-1); border: 1px solid var(--glass-border);
+    border-radius: 10px; padding: 6px 8px 6px 14px; font-family: var(--font-mono); font-size: 12.5px; color: var(--text); }
+  .ref-link-row span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ref-copy-btn { padding: 8px 12px; border-radius: 8px; background: var(--accent); color: white; border: none; cursor: pointer; font-size: 12px; font-weight: 600; font-family: inherit; }
+  .ref-stats { display: flex; gap: 22px; margin-top: 14px; }
+  .ref-stat b { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--accent); display: block; line-height: 1; }
+  .ref-stat span { font-size: 11.5px; color: var(--text-muted); }
+  /* Фиксированная высота + аккуратная прокрутка: история операций бывает очень
+     длинной и раздувала страницу. Скроллбар появляется только когда список не
+     влезает; на коротком экране ограничиваемся 56vh. */
+  .history-list { display: flex; flex-direction: column; gap: 10px;
+    max-height: min(380px, 56vh); overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+    padding-right: 6px; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
+  .history-list::-webkit-scrollbar { width: 10px; }
+  .history-list::-webkit-scrollbar-track { background: transparent; margin: 2px 0; }
+  .history-list::-webkit-scrollbar-thumb { background: var(--accent-glass); border-radius: 999px;
+    border: 3px solid transparent; background-clip: padding-box; }
+  .history-list::-webkit-scrollbar-thumb:hover { background: var(--accent); background-clip: padding-box; }
+  .history-item { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 13px 14px; border-radius: 14px; background: var(--glass-2); border: 1px solid var(--glass-border); }
+  .history-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .history-icon.plus { background: rgba(98,191,164,0.16); color: var(--c-mint); }
+  .history-icon.minus { background: var(--accent-glass); color: var(--accent); }
+  .history-title { font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .history-date { font-size: 11.5px; color: var(--text-dim); font-family: var(--font-mono); }
+  .history-amount { font-weight: 700; font-size: 14px; text-align: right; white-space: nowrap; }
+  .history-amount.plus { color: var(--c-mint); } .history-amount.minus { color: var(--text-muted); }
+  .history-amount small { display: block; font-weight: 500; font-size: 11px; color: var(--text-dim); }
+  .history-empty { text-align: center; padding: 22px; font-size: 13px; color: var(--text-dim); }
+  .field-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid rgba(60,50,110,0.07); }
+  .field-row:last-child { border-bottom: none; }
+  .field-key { font-size: 12.5px; color: var(--text-muted); }
+  .field-val { font-size: 14px; color: var(--text); font-weight: 500; min-width: 0; text-overflow: ellipsis; overflow: hidden; }
+  .field-edit { background: none; border: none; cursor: pointer; color: var(--accent); font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 8px; font-family: inherit; transition: background 180ms; }
+  .field-edit:hover { background: var(--accent-glass); }
+  .consent-ok { color: var(--c-mint); font-weight: 600; }
+  .footer-row { text-align: center; margin-top: 8px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .gate { text-align: center; padding: 60px 20px; }
+  .gate-icon { width: 72px; height: 72px; margin: 0 auto 20px; border-radius: 20px; background: var(--accent-glass); color: var(--accent); display: flex; align-items: center; justify-content: center; }
+  .gate h2 { font-family: var(--font-display); font-weight: 500; font-size: 26px; margin-bottom: 8px; }
+  .gate p { color: var(--text-muted); margin-bottom: 24px; max-width: 360px; margin-left: auto; margin-right: auto; }
+  .skeleton { color: var(--text-dim); text-align: center; padding: 50px; font-size: 14px; }
+
+  /* === MOBILE-FIXES (audit pass 1) — profile === */
+  body { padding-top: env(safe-area-inset-top); }
+  @media (max-width: 900px) {
+    .blob-2 { display: none; }
+    .blob { filter: blur(60px); }
+  }
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    .promo-input { font-size: 16px !important; }
+    input[type="text"], input[type="email"], input[type="password"] { font-size: 16px !important; }
+    input[type=range].trange::-webkit-slider-thumb { width: 32px !important; height: 32px !important; }
+    .nav-back { padding: 10px 16px !important; font-size: 14px !important; min-height: 40px; }
+  }
+
+  /* === Inline password modal (replaces native prompt()) === */
+  .pf-modal-bd {
+    position: fixed; inset: 0; background: rgba(31,26,53,0.55);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center; z-index: 9999;
+    padding: 20px; padding-top: max(20px, env(safe-area-inset-top));
+  }
+  .pf-modal-bd.shown { display: flex; }
+  .pf-modal {
+    background: #fff; border-radius: 20px; padding: 24px; max-width: 380px; width: 100%;
+    box-shadow: 0 20px 60px rgba(31,26,53,0.25);
+  }
+  .pf-modal h3 { font-size: 18px; margin-bottom: 18px; font-weight: 600; }
+  .pf-modal label { display: block; font-size: 13px; color: var(--text-muted); margin: 12px 0 6px; }
+  .pf-modal input {
+    width: 100%; padding: 12px 14px; border: 1px solid var(--glass-border);
+    border-radius: 12px; font-size: 16px; font-family: inherit; background: var(--glass-1);
+  }
+  .pf-modal-err { color: #d13b53; font-size: 13px; margin-top: 10px; min-height: 18px; }
+  .pf-modal-row {
+    display: flex; gap: 10px; margin-top: 18px;
+  }
+  .pf-modal-row button {
+    flex: 1; padding: 13px; border-radius: 12px; font-weight: 600; font-size: 14px;
+    border: 1px solid var(--glass-border); background: var(--glass-1); color: var(--text);
+    cursor: pointer; font-family: inherit; min-height: 46px;
+  }
+  .pf-modal-row button.primary {
+    background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+    color: #fff; border-color: transparent;
+  }
+</style>
+</head>
+<body>
+<div class="bg-canvas"><div class="blob blob-1"></div><div class="blob blob-2"></div></div>
+<div class="wrap">
+  <nav class="topnav"><div class="topnav-inner">
+    <a href="/" class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      К карточкам</a>
+    <a href="/admin" class="nav-pill nav-admin" id="adminLink" style="display:none;">⚙ Админка</a>
+    <a href="/" class="nav-logo">карточка <em>Ai</em></a>
+  </div></nav>
+  <div class="container" id="profileRoot"><div class="skeleton">Загрузка профиля…</div></div>
+</div>
+
+<script src="/static/account.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  let PRICING = null, ME = null, SLIDER_CARDS = 40;
+
+  function initials(email, name) {
+    if (name) return name.charAt(0).toUpperCase();
+    if (!email) return '?';
+    return email.split('@')[0].charAt(0).toUpperCase();
+  }
+  function shortName(email, name) { return name || (email ? email.split('@')[0] : 'гость'); }
+  function fmtDate(ts) {
+    const d = new Date(ts);
+    const m = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+    return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+  }
+  function relTime(ts) {
+    const diff = Math.floor((Date.now() - new Date(ts).getTime()) / 1000);
+    if (diff < 60) return 'только что';
+    if (diff < 3600) return `${Math.floor(diff/60)} мин назад`;
+    if (diff < 86400) return `${Math.floor(diff/3600)} ч назад`;
+    return fmtDate(ts);
+  }
+
+  function renderGate() {
+    $('profileRoot').innerHTML = `
+      <div class="pcard"><div class="gate">
+        <div class="gate-icon">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <h2>Войдите в профиль</h2>
+        <p>Баланс карточек, история покупок, промокоды и реферальная программа — всё в одном месте.</p>
+        <button class="btn btn-primary" onclick="Account.openAuth({mode:'login', onSuccess: load})">Войти или зарегистрироваться</button>
+      </div></div>`;
+  }
+
+  function render() {
+    const cards = ME.balance_cards || 0;
+    const sl = PRICING.slider;
+    SLIDER_CARDS = Math.min(Math.max(SLIDER_CARDS, sl.min_cards), sl.max_cards);
+    if ($('adminLink')) $('adminLink').style.display = ME.is_admin ? '' : 'none';
+
+    $('profileRoot').innerHTML = `
+      <div class="hello-card">
+        <div class="avatar-big">${initials(ME.email, ME.name)}</div>
+        <div class="hello-text">
+          <div class="hello-greeting">Привет, <em>${shortName(ME.email, ME.name)}</em></div>
+          <div class="hello-email">${ME.email}</div>
+        </div>
+        <div class="balance-bubble">
+          <div class="balance-bubble-label">Баланс</div>
+          <div class="balance-bubble-num">${Account.fmt(cards)}</div>
+          <div class="balance-bubble-sub">${Account.declCards(cards)} ${ME.free_available ? '· +1 бесплатная проба' : ''}</div>
+        </div>
+      </div>
+
+      <div class="grid-3" id="statsRow"></div>
+
+      <div class="pcard">
+        <div class="pcard-head">
+          <div><div class="pcard-title">Купить карточки</div>
+            <div class="pcard-sub">Выберите количество — чем больше, тем дешевле каждая. Карточки не сгорают.</div></div>
+          <span class="pcard-tag">Ползунок</span>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-top">
+            <div>
+              <div class="slider-big"><span id="slCards">${SLIDER_CARDS}</span> <small id="slCardsWord">карточек</small></div>
+              <div class="slider-sub">одна карточка = один товар с паком дизайнов</div>
+            </div>
+            <div class="slider-price">
+              <div class="slider-price-amt" id="slPrice">…</div>
+              <div class="slider-price-per" id="slPer"></div>
+              <span class="slider-save" id="slSave" style="display:none;"></span>
+            </div>
+          </div>
+          <input type="range" class="trange" id="slRange" min="${sl.min_cards}" max="${sl.max_cards}" step="${sl.step}" value="${SLIDER_CARDS}">
+          <div class="slider-ticks"><span>${sl.min_cards}</span><span>${Math.round(sl.max_cards/2)}</span><span>${sl.max_cards}</span></div>
+          <div class="slider-presets" id="slPresets"></div>
+          <button class="btn btn-primary btn-block" id="slBuy" style="margin-top:18px;" onclick="buyCards()">Купить карточки</button>
+        </div>
+      </div>
+
+      <div class="grid-promo-ref">
+        <div class="pcard" style="margin-bottom:0;">
+          <div class="pcard-head"><div><div class="pcard-title">Промокод</div>
+            <div class="pcard-sub">Бонусные карточки</div></div><span class="pcard-tag">Бонус</span></div>
+          <div class="promo-row">
+            <input type="text" class="promo-input" id="promoInput" placeholder="ВВЕДИТЕ КОД" maxlength="24">
+            <button class="btn btn-primary" id="promoBtn" onclick="applyPromo()">Применить</button>
+          </div>
+          <div id="promoMsg" style="margin-top:10px;font-size:12px;color:var(--text-dim);">
+            Попробуйте: <strong style="color:var(--accent);font-family:var(--font-mono);">WELCOME5</strong> — 5 карточек</div>
+        </div>
+        <div class="pcard" style="margin-bottom:0;" id="refCard">
+          <div class="pcard-head"><div><div class="pcard-title">Приведи друга</div>
+            <div class="pcard-sub">Другу — бонус при регистрации, вам — карточки за его первую покупку</div></div><span class="pcard-tag">Реферал</span></div>
+          <div class="ref-link-row">
+            <span id="refLink">…</span>
+            <button class="ref-copy-btn" onclick="copyRef()">Копировать</button>
+          </div>
+          <div class="ref-stats" id="refStats"></div>
+        </div>
+      </div>
+
+      <div class="pcard">
+        <div class="pcard-head"><div><div class="pcard-title">История операций</div>
+          <div class="pcard-sub">Покупки, бонусы и списания карточек</div></div><span class="pcard-tag">Архив</span></div>
+        <div id="historyBox"><div class="history-empty">Загрузка…</div></div>
+      </div>
+
+      <div class="pcard">
+        <div class="pcard-head"><div><div class="pcard-title">Аккаунт</div>
+          <div class="pcard-sub">Email привязан к покупкам и чекам</div></div><span class="pcard-tag">Данные</span></div>
+        <div class="field-row"><div><div class="field-key">Email</div><div class="field-val">${ME.email}</div></div></div>
+        <div class="field-row"><div><div class="field-key">Имя</div><div class="field-val" id="nameVal">${ME.name || '—'}</div></div>
+          <button class="field-edit" onclick="changeName()">Изменить</button></div>
+        <div class="field-row"><div><div class="field-key">Уведомления на email</div>
+          <div class="field-val" id="notifVal">${ME.notif_email ? 'включены' : 'выключены'}</div></div>
+          <button class="field-edit" onclick="toggleNotif()">${ME.notif_email ? 'Выключить' : 'Включить'}</button></div>
+        <div class="field-row"><div><div class="field-key">Пароль</div><div class="field-val">••••••••</div></div>
+          <button class="field-edit" onclick="changePassword()">Сменить</button></div>
+        <div class="field-row"><div><div class="field-key">Согласия (152-ФЗ)</div>
+          <div class="field-val"><span class="consent-ok">✓ ПДн</span> · <span class="consent-ok">✓ Оферта</span></div></div>
+          <a class="field-edit" href="/legal" target="_blank" rel="noopener">Документы</a></div>
+      </div>
+
+      <div class="footer-row">
+        <button class="btn btn-secondary" onclick="doLogout()">Выйти</button>
+        <button class="btn btn-danger" onclick="deleteAccount()" title="Удалить аккаунт и персональные данные (152-ФЗ)">Удалить аккаунт</button>
+      </div>`;
+
+    buildPresets();
+    bindSlider();
+    updateSliderUI();
+    $('refLink').textContent = `${Account.siteBaseUrl()}/?ref=${ME.referral_code}`;
+    loadHistory();
+    loadReferral();
+  }
+
+  function renderStats(h) {
+    let bought = 0, spent = 0, spentRub = 0, bonus = 0;
+    (h.ledger || []).forEach(e => {
+      if (e.reason === 'purchase' && e.delta > 0) bought += e.delta;
+      if (e.reason === 'spend' && e.delta < 0) spent += -e.delta;
+      if ((e.reason === 'promo' || e.reason === 'referral' || e.reason === 'signup') && e.delta > 0) bonus += e.delta;
+    });
+    (h.purchases || []).forEach(p => { if (p.status === 'paid') spentRub += p.amount_rub; });
+    $('statsRow').innerHTML = `
+      <div class="stat-card"><div class="stat-num">${Account.fmt(bought + bonus)}</div><div class="stat-label">всего получено карточек</div></div>
+      <div class="stat-card"><div class="stat-num">${Account.fmt(spent)}</div><div class="stat-label">создано карточек</div></div>
+      <div class="stat-card"><div class="stat-num">${Account.fmt(spentRub)} ₽</div><div class="stat-label">потрачено за всё время</div></div>`;
+  }
+
+  const REASONS = {
+    purchase: { label: 'Покупка карточек' }, promo: { label: 'Промокод' },
+    referral: { label: 'Реферальный бонус' }, signup: { label: 'Бонус за регистрацию' },
+    refund: { label: 'Возврат карточки' }, spend: { label: 'Генерация карточки' },
+    adjust: { label: 'Корректировка (админ)' },
+  };
+
+  async function loadHistory() {
+    try {
+      const h = await Account.history();
+      renderStats(h);
+      const purchById = {}; (h.purchases || []).forEach(p => purchById[p.id] = p);
+      const entries = (h.ledger || []);
+      if (!entries.length) { $('historyBox').innerHTML = '<div class="history-empty">Пока пусто — пополните баланс или активируйте промокод</div>'; return; }
+      $('historyBox').innerHTML = '<div class="history-list">' + entries.map(e => {
+        const meta = REASONS[e.reason] || { label: e.reason };
+        let title = meta.label;
+        if (e.reason === 'promo' && e.ref_id) title = `Промокод ${e.ref_id}`;
+        let rub = '';
+        if (e.reason === 'purchase' && purchById[e.ref_id]) rub = `<small>${Account.fmt(purchById[e.ref_id].amount_rub)} ₽</small>`;
+        const sign = e.delta >= 0 ? 'plus' : 'minus';
+        return `<div class="history-item">
+          <div class="history-icon ${sign}">${sign === 'plus'
+            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>'}</div>
+          <div><div class="history-title">${title}</div><div class="history-date">${relTime(e.created_at)}</div></div>
+          <div class="history-amount ${sign}">${e.delta >= 0 ? '+' : ''}${Account.fmt(e.delta)} ${Account.declCards(Math.abs(e.delta))}${rub}</div>
+        </div>`;
+      }).join('') + '</div>';
+    } catch (e) { $('historyBox').innerHTML = '<div class="history-empty">Не удалось загрузить</div>'; }
+  }
+
+  async function loadReferral() {
+    try {
+      const r = await Account.referral();
+      $('refStats').innerHTML = `
+        <div class="ref-stat"><b>${r.invited}</b><span>приглашено</span></div>
+        <div class="ref-stat"><b>${r.rewarded}</b><span>оплатили</span></div>
+        <div class="ref-stat"><b>+${Account.fmt(r.cards_earned)}</b><span>карточек заработано</span></div>`;
+    } catch (e) {}
+  }
+
+  function buildPresets() {
+    const sl = PRICING.slider;
+    const presets = [10, 40, 100, 300].filter(t => t >= sl.min_cards && t <= sl.max_cards);
+    $('slPresets').innerHTML = presets.map(t =>
+      `<button class="slider-preset" data-t="${t}" onclick="setSlider(${t})">${t}</button>`).join('');
+  }
+  function bindSlider() {
+    $('slRange').addEventListener('input', e => { SLIDER_CARDS = parseInt(e.target.value); updateSliderUI(); });
+  }
+  window.setSlider = function (t) { SLIDER_CARDS = t; $('slRange').value = t; updateSliderUI(); };
+  function updateSliderUI() {
+    const sl = PRICING.slider;
+    const pct = ((SLIDER_CARDS - sl.min_cards) / (sl.max_cards - sl.min_cards)) * 100;
+    $('slRange').style.setProperty('--fill', pct + '%');
+    $('slCards').textContent = Account.fmt(SLIDER_CARDS);
+    $('slCardsWord').textContent = Account.declCards(SLIDER_CARDS);
+    document.querySelectorAll('.slider-preset').forEach(b =>
+      b.classList.toggle('active', parseInt(b.dataset.t) === SLIDER_CARDS));
+    // мгновенная цена — считаем на клиенте, без запроса
+    const q = Account.quoteLocal(SLIDER_CARDS);
+    if (q) {
+      $('slPrice').textContent = Account.fmt(Math.round(q.amount_rub)) + ' ₽';
+      $('slPer').textContent = q.per_card_rub.toFixed(0) + ' ₽ за карточку';
+      const base = (sl.anchors && sl.anchors[0]) ? sl.anchors[0][1] : null;
+      if (base && q.per_card_kopecks < base) {
+        const save = Math.round((1 - q.per_card_kopecks / base) * 100);
+        const el = $('slSave'); el.textContent = `−${save}% к цене`; el.style.display = save > 0 ? '' : 'none';
+      } else { $('slSave').style.display = 'none'; }
+      $('slBuy').textContent = `Купить ${Account.fmt(SLIDER_CARDS)} ${Account.declCards(SLIDER_CARDS)} за ${Account.fmt(Math.round(q.amount_rub))} ₽`;
+    }
+  }
+
+  window.buyCards = async function () {
+    const btn = $('slBuy'); btn.disabled = true;
+    try {
+      const out = await Account.createPurchase({
+        kind: 'cards', cards: SLIDER_CARDS, email: ME.email, consent_offer: true,
+        idempotency_key: 'cards-' + ME.id + '-' + SLIDER_CARDS + '-' + Date.now(),
+      });
+      location.href = out.confirmation_url;
+    } catch (e) { btn.disabled = false; toast(e.message || 'Не удалось создать заказ'); }
+  };
+
+  window.applyPromo = async function () {
+    const inp = $('promoInput'), btn = $('promoBtn');
+    const code = (inp.value || '').trim().toUpperCase();
+    if (!code) { toast('Введите код'); return; }
+    btn.disabled = true;
+    try {
+      const r = await Account.applyPromo(code);
+      $('promoMsg').innerHTML = `<span style="color:var(--c-mint);font-weight:600;">+${r.cards_added} ${Account.declCards(r.cards_added)} зачислено ✓</span>`;
+      inp.value = '';
+      ME = await Account.me(true); render();
+      toast(`+${r.cards_added} ${Account.declCards(r.cards_added)}`);
+    } catch (e) {
+      btn.disabled = false;
+      $('promoMsg').innerHTML = `<span style="color:var(--danger);">${e.message}</span>`;
+    }
+  };
+
+  window.copyRef = function () {
+    const text = $('refLink').textContent;
+    navigator.clipboard?.writeText(text).then(() => toast('Ссылка скопирована')).catch(() => toast('Не удалось'));
+  };
+  window.changeName = async function () {
+    const out = await window.askFields('Изменить имя', [
+      { label: 'Имя', name: 'name', value: ME.name || '', autocomplete: 'name' }
+    ]);
+    if (!out || !out.name.trim()) return;
+    try { ME = await Account.updateAccount({ name: out.name.trim() }); $('nameVal').textContent = ME.name || '—'; toast('Сохранено'); }
+    catch (e) { toast(e.message); }
+  };
+  window.toggleNotif = async function () {
+    try { ME = await Account.updateAccount({ notif_email: !ME.notif_email }); render(); } catch (e) { toast(e.message); }
+  };
+  window.changePassword = async function () {
+    const out = await window.askFields('Сменить пароль', [
+      { label: 'Текущий пароль', name: 'cur', type: 'password', autocomplete: 'current-password' },
+      { label: 'Новый пароль (мин. 6 символов)', name: 'nw', type: 'password', autocomplete: 'new-password', min: 6 }
+    ]);
+    if (!out) return;
+    if (!out.cur) { toast('Введите текущий пароль'); return; }
+    if (!out.nw || out.nw.length < 6) { toast('Новый пароль слишком короткий'); return; }
+    try { await Account.updateAccount({ current_password: out.cur, new_password: out.nw }); toast('Пароль изменён'); }
+    catch (e) { toast(e.message); }
+  };
+  window.doLogout = async function () { await Account.logout(); location.href = '/'; };
+  window.deleteAccount = async function () {
+    // Кастомная модалка вместо native confirm() — на Android WebView native-диалог
+    // приходит с URL-префиксом, английскими кнопками и легко мис-тапается.
+    // Для НЕОБРАТИМОЙ операции (152-ФЗ удаление ПДн) нужна явная двойная защита:
+    // галочка «понимаю» + ввод слова «удалить» вручную, чтобы исключить случайный клик.
+    const ok = await new Promise((resolve) => {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:fixed;inset:0;background:rgba(15,12,30,0.55);'
+        + 'backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;'
+        + 'justify-content:center;padding:20px;';
+      wrap.innerHTML = `
+        <div role="dialog" aria-modal="true" style="background:#fff;border-radius:16px;
+             max-width:440px;width:100%;padding:24px 22px;box-shadow:0 30px 80px rgba(0,0,0,0.35);
+             font-family:inherit;">
+          <h3 style="margin:0 0 8px;font-size:18px;color:#1F1A35;">Удалить аккаунт?</h3>
+          <p style="color:#5e5872;font-size:14px;line-height:1.5;margin:0 0 14px;">
+            Удалятся все ваши генерации, баланс карточек и персональные данные (152-ФЗ).
+            <strong>Это необратимо</strong> — восстановить нельзя.
+          </p>
+          <label style="display:flex;align-items:flex-start;gap:8px;color:#1F1A35;font-size:13px;cursor:pointer;margin-bottom:10px;">
+            <input type="checkbox" id="del-confirm-chk" style="margin-top:2px;flex-shrink:0;">
+            <span>Я понимаю, что данные нельзя восстановить</span>
+          </label>
+          <div style="margin-bottom:14px;">
+            <div style="font-size:12px;color:#5e5872;margin-bottom:4px;">Введите слово <code>удалить</code> для подтверждения:</div>
+            <input type="text" id="del-confirm-word" autocomplete="off" style="width:100%;box-sizing:border-box;
+                   padding:10px 12px;border:1px solid #d8d3e8;border-radius:10px;font-size:14px;
+                   font-family:inherit;color:#1F1A35;">
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button type="button" id="del-cancel" style="padding:10px 16px;border-radius:10px;
+                    background:#f0eef7;color:#1F1A35;border:0;font-size:14px;font-weight:600;
+                    cursor:pointer;font-family:inherit;min-height:44px;">Отмена</button>
+            <button type="button" id="del-confirm" disabled style="padding:10px 18px;border-radius:10px;
+                    background:#d94545;color:#fff;border:0;font-size:14px;font-weight:600;
+                    cursor:pointer;font-family:inherit;min-height:44px;opacity:0.5;">Удалить</button>
+          </div>
+        </div>`;
+      document.body.appendChild(wrap);
+      const chk = wrap.querySelector('#del-confirm-chk');
+      const word = wrap.querySelector('#del-confirm-word');
+      const okBtn = wrap.querySelector('#del-confirm');
+      const cancelBtn = wrap.querySelector('#del-cancel');
+      function refresh() {
+        const ready = chk.checked && word.value.trim().toLowerCase() === 'удалить';
+        okBtn.disabled = !ready;
+        okBtn.style.opacity = ready ? '1' : '0.5';
+      }
+      chk.addEventListener('change', refresh);
+      word.addEventListener('input', refresh);
+      function close(result) { wrap.remove(); document.removeEventListener('keydown', onKey); resolve(result); }
+      function onKey(e) { if (e.key === 'Escape') close(false); }
+      document.addEventListener('keydown', onKey);
+      cancelBtn.addEventListener('click', () => close(false));
+      wrap.addEventListener('click', (e) => { if (e.target === wrap) close(false); });
+      okBtn.addEventListener('click', () => { if (!okBtn.disabled) close(true); });
+    });
+    if (!ok) return;
+    try { await Account.deleteAccount(); toast('Аккаунт удалён'); setTimeout(() => location.href = '/', 800); }
+    catch (e) { toast(e.message); }
+  };
+
+  window.toast = function (msg) {
+    let el = $('toast');
+    if (!el) { el = document.createElement('div'); el.id = 'toast';
+      el.style.cssText = 'position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:rgba(31,26,53,0.92);color:white;padding:12px 22px;border-radius:14px;font-size:14px;font-weight:500;box-shadow:0 12px 30px rgba(0,0,0,0.25);z-index:9999;opacity:0;transition:opacity 280ms;backdrop-filter:blur(12px);';
+      document.body.appendChild(el); }
+    el.textContent = msg; el.style.opacity = '1';
+    clearTimeout(window._toastT); window._toastT = setTimeout(() => { el.style.opacity = '0'; }, 2400);
+  };
+
+  async function load() {
+    try {
+      PRICING = await Account.pricing();
+      ME = await Account.me(true);
+      if (!ME) { renderGate(); return; }
+      render();
+      const paid = new URLSearchParams(location.search).get('paid');
+      if (paid) { toast('Оплата прошла — карточки зачислены ✓'); history.replaceState({}, '', '/profile'); }
+    } catch (e) { $('profileRoot').innerHTML = `<div class="pcard"><div class="history-empty">Ошибка загрузки: ${e.message}</div></div>`; }
+  }
+  load();
+</script>
+
+<!-- === Inline modal (replaces native prompt() for name/password change) === -->
+<div class="pf-modal-bd" id="pfModal" role="dialog" aria-modal="true">
+  <div class="pf-modal">
+    <h3 id="pfModalTitle">…</h3>
+    <div id="pfModalFields"></div>
+    <div class="pf-modal-err" id="pfModalErr"></div>
+    <div class="pf-modal-row">
+      <button type="button" id="pfModalCancel">Отмена</button>
+      <button type="button" id="pfModalOk" class="primary">Сохранить</button>
+    </div>
+  </div>
+</div>
+<script>
+/* Promise-based modal: askFields([{label, type, name, value}]) → Promise<values|null> */
+(function(){
+  const bd = document.getElementById('pfModal');
+  const titleEl = document.getElementById('pfModalTitle');
+  const fieldsEl = document.getElementById('pfModalFields');
+  const errEl = document.getElementById('pfModalErr');
+  const ok = document.getElementById('pfModalOk');
+  const cancel = document.getElementById('pfModalCancel');
+  let resolver = null;
+
+  function close(value){
+    bd.classList.remove('shown');
+    document.body.style.overflow = '';
+    const r = resolver; resolver = null;
+    if (r) r(value);
+  }
+  cancel.addEventListener('click', () => close(null));
+  bd.addEventListener('click', (e) => { if (e.target === bd) close(null); });
+  document.addEventListener('keydown', (e) => {
+    if (!bd.classList.contains('shown')) return;
+    if (e.key === 'Escape') close(null);
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); ok.click(); }
+  });
+  ok.addEventListener('click', () => {
+    const out = {};
+    fieldsEl.querySelectorAll('input').forEach(i => { out[i.name] = i.value; });
+    close(out);
+  });
+
+  window.askFields = function(title, fields){
+    titleEl.textContent = title;
+    errEl.textContent = '';
+    fieldsEl.innerHTML = fields.map(f =>
+      `<label for="pf-${f.name}">${f.label}</label>
+       <input id="pf-${f.name}" name="${f.name}" type="${f.type || 'text'}"
+        value="${(f.value || '').replace(/"/g,'&quot;')}"
+        autocomplete="${f.autocomplete || 'off'}"
+        inputmode="${f.inputmode || 'text'}"
+        ${f.min ? `minlength="${f.min}"` : ''}>`
+    ).join('');
+    bd.classList.add('shown');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => { const first = fieldsEl.querySelector('input'); if (first) first.focus(); }, 50);
+    return new Promise(res => { resolver = res; });
+  };
+  window.setModalError = function(msg){ errEl.textContent = msg || ''; };
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand_violet">#4C29D3</color>
+    <color name="brand_violet_bright">#6B4FE0</color>
+    <color name="window_bg">#F4F2FA</color>
+    <color name="white">#FFFFFF</color>
+</resources>

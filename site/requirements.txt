@@ -1,0 +1,13 @@
+gradio>=4.44.0
+Pillow>=10.0.0
+requests>=2.31.0
+urllib3>=2.0.0
+
+# FastAPI server (server.py)
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
+
+# WB smart-stack (token pool + smart client)
+seleniumbase>=4.47.0      # обход антибот WB через uc=True (нужен Chrome)
+curl_cffi>=0.7.0          # опционально: TLS impersonation (-30..50% к 429)

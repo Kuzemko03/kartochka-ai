@@ -1,0 +1,25 @@
+[Unit]
+Description=Kartochka Ai — FastAPI backend (WB card generator)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=kartochka
+Group=kartochka
+WorkingDirectory=/opt/kartochka/site
+Environment=PYTHONUNBUFFERED=1
+# Детерминированный порт — nginx проксирует сюда же (см. nginx-kartochka.conf).
+Environment=PORT=8000
+# Пароль почты reg.ru держим НЕ здесь, а в drop-in:
+#   /etc/systemd/system/kartochka.service.d/secret.conf
+# Его создаёт deploy.sh (чтобы секрет не лежал в коде проекта). Вручную:
+#   systemctl edit kartochka   →   [Service]\nEnvironment=SMTP_PASSWORD=...
+ExecStart=/opt/kartochka/venv/bin/python server.py
+Restart=always
+RestartSec=3
+# Прогрев Chrome-пула токенов WB занимает время — даём подняться спокойно.
+TimeoutStartSec=180
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#eef0f4">
+<title>Оплата · защищённая страница</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="/static/assets/favicon.png">
+<link rel="apple-touch-icon" href="/static/assets/logo.png">
+<link rel="manifest" href="/static/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="карточка Ai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef0f4; --card:#fff; --text:#15171c; --muted:#5b6170; --dim:#9aa0ad;
+    --green:#1aab5a; --green-d:#138a48; --line:#e6e8ee; --accent:#4C29D3;
+    --font:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;
+    display:flex;align-items:center;justify-content:center;padding:20px;-webkit-font-smoothing:antialiased;}
+  .frame{width:100%;max-width:440px;}
+  .testbar{background:#fff5d6;border:1px solid #f0d98a;color:#8a6d00;border-radius:12px;
+    padding:9px 14px;font-size:12px;font-weight:600;margin-bottom:14px;text-align:center;}
+  .card{background:var(--card);border-radius:20px;box-shadow:0 18px 50px rgba(20,23,28,.18);
+    overflow:hidden;}
+  .head{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;
+    justify-content:space-between;gap:12px;}
+  .psp{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;letter-spacing:-.01em;}
+  .psp-logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#6B4FE0,#4C29D3);
+    display:flex;align-items:center;justify-content:center;color:#fff;}
+  .secure{display:flex;align-items:center;gap:6px;color:var(--green);font-size:11.5px;font-weight:600;}
+  .body{padding:22px 24px;}
+  .order{background:#f7f8fb;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:20px;}
+  .order-row{display:flex;justify-content:space-between;align-items:baseline;}
+  .order-desc{font-size:13px;color:var(--muted);}
+  .order-amt{font-size:28px;font-weight:800;letter-spacing:-.02em;}
+  .order-sub{font-size:12px;color:var(--dim);margin-top:4px;}
+  .label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.05em;margin:0 0 7px;}
+  .inp{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:11px;
+    font-family:var(--font);font-size:15px;background:#fcfcfd;transition:.15s;}
+  .inp:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(76,41,211,.12);}
+  .grp{margin-bottom:14px;}
+  .grp.cardnum{position:relative;}
+  .grp.cardnum .brand{position:absolute;right:12px;top:34px;font-size:11px;color:var(--dim);font-family:var(--mono);}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .fill{margin:6px 0 16px;}
+  .fill button{background:none;border:none;color:var(--accent);font-weight:600;font-size:12.5px;
+    cursor:pointer;font-family:inherit;padding:0;}
+  .pay{width:100%;padding:15px;border:none;border-radius:13px;cursor:pointer;
+    background:linear-gradient(135deg,var(--green),var(--green-d));color:#fff;font-family:inherit;
+    font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:9px;
+    transition:.15s;}
+  .pay:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(26,171,90,.35);}
+  .pay:disabled{opacity:.6;cursor:default;}
+  .cancel{display:block;width:100%;text-align:center;background:none;border:none;margin-top:12px;
+    color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit;text-decoration:none;}
+  .foot{padding:14px 24px;border-top:1px solid var(--line);text-align:center;color:var(--dim);font-size:11px;}
+  .spinner{width:18px;height:18px;border:2.4px solid rgba(255,255,255,.4);border-top-color:#fff;
+    border-radius:50%;animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .err{color:#d13b53;font-size:13px;text-align:center;margin-top:10px;display:none;}
+
+  /* === MOBILE-FIXES (audit pass 1) — pay === */
+  body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+  @media (max-width: 600px){
+    .inp { font-size: 16px !important; }   /* 16px — иначе iOS зумит на фокус карта/CVC */
+    .cancel { padding: 12px 16px !important; min-height: 44px; }
+    .pay { padding: 16px !important; min-height: 50px; }
+    .secure { font-size: 12px; }
+    .order-sub { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="testbar">⚠️ ТЕСТОВЫЙ РЕЖИМ — реальные деньги не списываются. Подключите боевого провайдера в payments.py</div>
+    <div class="card">
+      <div class="head">
+        <div class="psp">
+          <span class="psp-logo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </span>
+          Безопасная оплата
+        </div>
+        <div class="secure">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          SSL
+        </div>
+      </div>
+      <div class="body">
+        <div class="order">
+          <div class="order-row">
+            <span class="order-desc" id="orderDesc">Загрузка заказа…</span>
+            <span class="order-amt" id="orderAmt">—</span>
+          </div>
+          <div class="order-sub" id="orderSub"></div>
+        </div>
+
+        <form id="payForm">
+          <div class="grp cardnum">
+            <div class="label">Номер карты</div>
+            <input class="inp" id="num" inputmode="numeric" maxlength="19" placeholder="0000 0000 0000 0000" autocomplete="cc-number">
+            <span class="brand" id="brand"></span>
+          </div>
+          <div class="row2">
+            <div class="grp">
+              <div class="label">Срок</div>
+              <input class="inp" id="exp" inputmode="numeric" maxlength="7" placeholder="ММ / ГГ" autocomplete="cc-exp">
+            </div>
+            <div class="grp">
+              <div class="label">CVC</div>
+              <input class="inp" id="cvc" inputmode="numeric" maxlength="4" placeholder="•••" autocomplete="cc-csc">
+            </div>
+          </div>
+          <div class="fill"><button type="button" onclick="fillTest()">Подставить тестовую карту</button></div>
+          <button class="pay" id="payBtn" type="submit">
+            <span id="payLabel">Оплатить</span>
+          </button>
+          <div class="err" id="err"></div>
+          <button class="cancel" type="button" onclick="cancelPay()">Отменить и вернуться</button>
+        </form>
+      </div>
+      <div class="foot">Оплата защищена. Данные карты не передаются продавцу.</div>
+    </div>
+  </div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const purchaseId = params.get('purchase_id');
+  const fmt = n => Number(n).toLocaleString('ru-RU');
+  let purchase = null;
+
+  function declCards(n){ const t=n%100,l=n%10;
+    if(t>=11&&t<=14)return'карточек'; if(l===1)return'карточка'; if(l>=2&&l<=4)return'карточки'; return'карточек'; }
+
+  async function loadOrder(){
+    if(!purchaseId){ document.getElementById('orderDesc').textContent='Заказ не найден'; return; }
+    try{
+      const r = await fetch('/api/account/purchase/'+purchaseId, {credentials:'include'});
+      if(!r.ok) throw new Error('not found');
+      purchase = await r.json();
+      document.getElementById('orderDesc').textContent =
+        purchase.kind==='pack' ? 'Пакет карточек' : 'Пополнение карточками';
+      document.getElementById('orderAmt').textContent = fmt(purchase.amount_rub)+' ₽';
+      document.getElementById('orderSub').textContent =
+        `${fmt(purchase.cards)} ${declCards(purchase.cards)} · чек на ${purchase.receipt_email}`;
+      document.getElementById('payLabel').textContent = 'Оплатить '+fmt(purchase.amount_rub)+' ₽';
+      if(purchase.status==='paid'){ finishTo('/profile?paid='+purchaseId); }
+    }catch(e){
+      document.getElementById('orderDesc').textContent='Заказ не найден или истёк';
+      document.getElementById('payBtn').disabled=true;
+    }
+  }
+
+  // card masks (cosmetic; data never leaves this mock page)
+  const num=document.getElementById('num');
+  num.addEventListener('input',()=>{ let v=num.value.replace(/\D/g,'').slice(0,16);
+    num.value=v.replace(/(\d{4})(?=\d)/g,'$1 ');
+    document.getElementById('brand').textContent =
+      v.startsWith('4')?'VISA':(/^5[1-5]/.test(v)?'MC':(/^2/.test(v)?'МИР':'')); });
+  const exp=document.getElementById('exp');
+  exp.addEventListener('input',()=>{ let v=exp.value.replace(/\D/g,'').slice(0,4);
+    if(v.length>=3)v=v.slice(0,2)+' / '+v.slice(2); exp.value=v; });
+  document.getElementById('cvc').addEventListener('input',e=>{
+    e.target.value=e.target.value.replace(/\D/g,'').slice(0,4); });
+
+  function fillTest(){ num.value='4111 1111 1111 1111';
+    document.getElementById('brand').textContent='VISA';
+    exp.value='12 / 29'; document.getElementById('cvc').value='123'; }
+
+  function finishTo(url){ location.href=url; }
+
+  document.getElementById('payForm').addEventListener('submit', async e=>{
+    e.preventDefault();
+    const btn=document.getElementById('payBtn');
+    const err=document.getElementById('err'); err.style.display='none';
+    if(num.value.replace(/\D/g,'').length<16){ err.textContent='Введите номер карты (или «тестовая карта»)'; err.style.display='block'; return; }
+    btn.disabled=true;
+    document.getElementById('payLabel').innerHTML='<span class="spinner"></span>';
+    try{
+      // имитация обработки провайдером
+      await new Promise(r=>setTimeout(r,1100));
+      const r = await fetch('/api/account/purchase/'+purchaseId+'/confirm',{
+        method:'POST', credentials:'include',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({success:true})
+      });
+      const data = await r.json();
+      if(!r.ok || data.status!=='paid'){ throw new Error(data.error||'Оплата отклонена'); }
+      finishTo('/profile?paid='+purchaseId);
+    }catch(ex){
+      btn.disabled=false;
+      document.getElementById('payLabel').textContent='Оплатить '+(purchase?fmt(purchase.amount_rub)+' ₽':'');
+      err.textContent=ex.message||'Ошибка оплаты'; err.style.display='block';
+    }
+  });
+
+  async function cancelPay(){
+    try{ await fetch('/api/account/purchase/'+purchaseId+'/confirm',{
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({success:false}) }); }catch(e){}
+    finishTo('/checkout?canceled=1');
+  }
+
+  loadOrder();
+</script>
+</body>
+</html>

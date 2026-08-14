@@ -1,0 +1,185 @@
+{
+  "admin_emails": [],
+  "admin_ip_allowlist": [],
+  "site_gate": {
+    "enabled": true,
+    "login": "<GATE_LOGIN>",
+    "salt": "<SALT>",
+    "hash": "<HASH>",
+    "iterations": 200000,
+    "secret": "<SECRET>",
+    "session_ttl_seconds": 604800,
+    "max_attempts": 8,
+    "lockout_seconds": 900,
+    "allow_app": true,
+    "app_ua_marker": "KartochkaApp",
+    "_comment": "Глобальная заглушка-замок на весь сайт. Пароль хранится ТОЛЬКО хешем (PBKDF2-HMAC-SHA256). Выдан админу отдельно. Отключить после запуска: enabled=false + перезапуск. В проде секреты можно вынести в ENV WBN_GATE_LOGIN/HASH/SALT/SECRET/ENABLED.",
+    "_comment_allow_app": "allow_app=true → мобильное приложение (Android WebView, UA содержит app_ua_marker) проходит замок БЕЗ пароля. UA подделываем → это снятие трения для приложения, а не защита. Выключить: allow_app=false (или ENV WBN_GATE_ALLOW_APP=0)."
+  },
+  "site_base_url": "<SITE_BASE_URL>",
+  "_oauth_doc": "Соц-вход Google/Yandex. Кнопка появляется ТОЛЬКО когда у провайдера заполнены client_id И client_secret (иначе провайдер выключен, ничего не падает). Зарегистрируй приложение в консоли провайдера и в качестве Redirect URI укажи АДРЕС В PUNYCODE (провайдеры требуют ASCII-домен, кириллицу не примут): https://xn--your-domain.example/api/account/oauth/<provider>/callback — то есть https://xn--your-domain.example/api/account/oauth/google/callback и https://xn--your-domain.example/api/account/oauth/yandex/callback. Секреты лучше держать в ENV (OAUTH_GOOGLE_SECRET, OAUTH_YANDEX_SECRET) — но проще вписать сюда. Google: console.cloud.google.com → APIs & Services → Credentials → OAuth client ID (Web application), scope email/profile. Yandex: oauth.yandex.ru → создать приложение (платформа «Веб-сервисы»), права 'Доступ к адресу электронной почты' + 'Доступ к портрету пользователя'.",
+  "oauth": {
+    "_visibility_doc": "Кнопки Google/Yandex видны ВСЕГДА по умолчанию. Настроенный провайдер (заполнены client_id+client_secret) даёт реальный вход; ненастроенный по клику подсказывает добавить ключи. Если перед запуском хочешь скрыть ненастроенные кнопки — поставь hide_unconfigured=true (или ENV OAUTH_HIDE_UNCONFIGURED=1).",
+    "hide_unconfigured": false,
+    "google": {
+      "client_id": "<CLIENT_ID>",
+      "client_secret": "<CLIENT_SECRET>"
+    },
+    "yandex": {
+      "client_id": "<CLIENT_ID>",
+      "client_secret": "<CLIENT_SECRET>"
+    }
+  },
+  "password_reset_return_link": false,
+  "smtp": {
+    "enabled": true,
+    "host": "smtp.example.com",
+    "port": 465,
+    "ssl": true,
+    "user": "<USER>",
+    "password": "<PASSWORD>",
+    "sender": "<SENDER>",
+    "_doc": "Почта reg.ru. Пароль НЕ держи здесь — задай переменной окружения SMTP_PASSWORD в deploy/kartochka.service (она перебивает это поле). Домен кириллический → логин/адрес в punycode (xn--your-domain.example). enabled=true, но пока password пустой И нет SMTP_PASSWORD — мейлер остаётся заглушкой (письма в лог), ничего не ломается."
+  },
+  "veo_api_key": "<VEO_API_KEY>",
+  "veo_max_concurrent": 8,
+  "fastgen_api_key": "<FASTGEN_API_KEY>",
+  "fastgen_base_url": "<FASTGEN_BASE_URL>",
+  "_claude_proxy_doc": "proxy_url ниже — ISP HTTP-прокси akuzemko@176.106.62.3:49155. Применяется ТОЛЬКО к этим LLM-вызовам, обходит системный VPN. Чтобы выключить — поставь \"\" или удали поле.",
+  "_claude_endpoints_doc": "Порядок endpoints можно менять вживую через админку (/admin → блок 'Порядок LLM endpoints'). Сохранённый порядок переезжает в claude_endpoint_order и применяется поверх этого массива на старте каждого запроса.",
+  "claude_endpoint_order": [
+    "openai-fallback",
+    "stepanovikov",
+    "stepanov-aimtr",
+    "wellflow"
+  ],
+  "claude_endpoints": [],
+  "llm_default_tier": "balanced",
+  "llm_connect_timeout": 15,
+  "llm_read_timeout": 120,
+  "_llm_routing_doc": "Per-task маршрутизация моделей. purpose_tier → tier; llm_tiers → цепочка (endpoint,model) primary→fallback. Все модели РЕАЛЬНО доступны на OpenAI Public API и подтверждены поддерживающими vision (4.1, 4.1-mini, 4.1-nano, 4o, 4o-mini). gpt-5.x ВЫРЕЗАН — модели 'gpt-5.4*' не существуют и обламывались тихо как 'vision не поддерживается'. Цены (per 1M токенов на 06-2026): 4.1 = $2/$8, 4.1-mini = $0.4/$1.6, 4.1-nano = $0.10/$0.40, 4o-mini = $0.15/$0.60, 4o = $2.5/$10. Claude (opus) в smart остался бэкапом, когда прокси оживёт.",
+  "llm_tiers": {
+    "smart": [
+      {
+        "endpoint": "openai-fallback",
+        "model": "gpt-4.1"
+      },
+      {
+        "endpoint": "stepanovikov",
+        "model": "claude-opus-4.6"
+      },
+      {
+        "endpoint": "stepanov-aimtr",
+        "model": "claude-opus-4.6"
+      },
+      {
+        "endpoint": "openai-fallback",
+        "model": "gpt-4o"
+      }
+    ],
+    "balanced": [
+      {
+        "endpoint": "openai-fallback",
+        "model": "gpt-4.1-mini"
+      },
+      {
+        "endpoint": "openai-fallback",
+        "model": "gpt-4o-mini"
+      },
+      {
+        "endpoint": "openai-fallback",
+        "model": "gpt-4.1"
+      }
+    ],
+    "vision_cheap": [
+      {
+        "endpoint": "openai-fallback",
+        "model": "gpt-4.1-mini"
+      },
+      {
+        "endpoint": "openai-fallback",
+        "model": "gpt-4.1"
+      },
+      {
+        "endpoint": "openai-fallback",
+        "model": "gpt-4.1-nano"
+      }
+    ],
+    "cheap": [
+      {
+        "endpoint": "openai-fallback",
+        "model": "gpt-4o-mini"
+      },
+      {
+        "endpoint": "openai-fallback",
+        "model": "gpt-4.1-nano"
+      }
+    ]
+  },
+  "purpose_tier": {
+    "design": "smart",
+    "text_design": "smart",
+    "visual_design": "smart",
+    "copy_fix": "smart",
+    "competitor_synth": "balanced",
+    "description": "balanced",
+    "variations": "balanced",
+    "detect_category": "vision_cheap",
+    "visual_analysis": "vision_cheap",
+    "pool_identify": "vision_cheap",
+    "refine_query": "cheap",
+    "video_motion": "cheap",
+    "prompt_softer": "cheap"
+  },
+  "_design_split_doc": "Если true — пайплайн генерит дизайн в 2 прохода: text-agent (только тексты карточек) → visual-agent (только scene/extracted_style). Это даёт более сильные тексты (агент сфокусирован на копирайтинге) и более точные сцены (привязаны к hook каждой карточки). Trade-off: 2 LLM-вызова вместо одного → +5-10s latency, но качество карточек заметно выше. См. generator._design_pack_split.",
+  "design_split": true,
+  "claude_api_key": "<CLAUDE_API_KEY>",
+  "claude_base_url": "<CLAUDE_BASE_URL>",
+  "claude_model_primary": "claude-opus-4.6",
+  "claude_model_fallback": "claude-sonnet-4.6",
+  "vidinator_core_path": "./vidinator_core",
+  "output_dir": "./output",
+  "tmp_dir": "./tmp",
+  "_default_provider_doc": "fastgen_openai = 1 credit/изображение, лучший в индустрии рендер кириллицы и геро-текстов = идеально для WB. fastgen_nanopro = 4 credits, держит сложную идентичность товара (логотипы/надписи), но дороже в 4 раза. openai_direct = ПРЯМОЙ OpenAI gpt-image-2 (минуя FastGen) — платится из openai_image_api_key или из claude_endpoints['openai-fallback']. Дефолт ChatGPT держит цену вниз и текст лучше; селлеры с уникальной упаковкой могут переключиться через UI.",
+  "default_provider": "openai_direct",
+  "_openai_image_doc": "Прямой OpenAI gpt-image-2. Активен когда default_provider='openai_direct' (или клиент явно передал image_provider='openai_direct'). quality: low/medium/high/auto. size: 1024x1024 / 1024x1536 / 1536x1024 / auto (auto → клиент мапит aspect_ratio). Если openai_image_api_key пустой — берётся из claude_endpoints[name='openai-fallback'].api_key. Меняется в реал-тайме через /admin → блок 'GPT Image 2 (прямой OpenAI)'.",
+  "openai_image_base_url": "https://api.openai.com/v1",
+  "openai_image_model": "gpt-image-2",
+  "openai_image_quality": "low",
+  "openai_image_size": "auto",
+  "openai_image_api_key": "<OPENAI_IMAGE_API_KEY>",
+  "_tier_policy_doc": "Тир-политика картинок: платные генерации (тратят купленные карточки) → gpt-image-2 с качеством openai_image_quality (medium). Бесплатные пробы → new_user_provider. tier_policy_enabled=false выключает тиринг (берётся default_provider + openai_image_quality для всех).",
+  "tier_policy_enabled": true,
+  "new_user_provider": "openai_low",
+  "veononstop_default_model": "GEM_PIX_2",
+  "veononstop_fallback_model": "NARWHAL",
+  "_fastgen_proxy_doc": "V5: прокси ОТКЛЮЧЁН. В V5 ChatGPT-флоу выполняется на стороне fast-gen.ai, клиентский прокси на качество OpenAI не влияет, а старый ISP-прокси (176.106.62.248) мёртв (ReadTimeout) и ронял бы дефолтный OpenAI. Все запросы идут напрямую. Чтобы вернуть прокси — впиши URL в fastgen_proxy_url и список в fastgen_proxy_for_providers.",
+  "fastgen_proxy_url": "<FASTGEN_PROXY_URL>",
+  "fastgen_proxy_for_providers": [],
+  "_fastgen_proxy_url_old_disabled": "http://akuzemko030HY7K:U4hJaS6p2y@176.106.62.248:49155",
+  "wb_smart": {
+    "enabled": true,
+    "token_pool_min": 2,
+    "token_pool_max": 4,
+    "token_ttl_seconds": 14400,
+    "token_refresh_interval": 1800,
+    "proxies": [
+      "http://f62b77ff884db77af173:eabe7e29e99466eb@gw.dataimpulse.com:823"
+    ],
+    "proxy_country": "<PROXY_COUNTRY>",
+    "proxy_threshold_429": 2,
+    "proxy_recovery_successes": 5,
+    "max_retries_per_request": 5,
+    "request_timeout": [
+      8,
+      20
+    ],
+    "use_curl_cffi": false,
+    "verbose": false
+  },
+  "ai_proxy": {
+    "enabled": true,
+    "url": "<URL>"
+  },
+  "_ai_proxy_doc": "Глобальный рубильник прокси НЕЙРОНКИ (управляется из админки). enabled=false → все AI-запросы (LLM/FastGen/OpenAI-image) идут НАПРЯМУЮ, перебивая per-endpoint proxy_url. enabled=true + url (http://user:pass@host:port) → весь AI-трафик через этот прокси."
+}

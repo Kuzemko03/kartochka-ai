@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#eef0f4">
+<title>Новый пароль · карточка Ai</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="/static/assets/favicon.png"><link rel="shortcut icon" href="/static/assets/favicon.ico"><link rel="apple-touch-icon" href="/static/assets/logo.png">
+<link rel="manifest" href="/static/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="карточка Ai">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#F4F2FA; --text:#1F1A35; --muted:rgba(31,26,53,0.62); --accent:#4C29D3; --accent2:#6B4FE0;
+    --line:#e4e2ee; --mint:#62BFA4; --danger:#D94560; --font:'Inter',system-ui,sans-serif; --display:'Fraunces',serif; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+    background-image:radial-gradient(ellipse at 30% 20%,#EDE5FB 0,transparent 55%),radial-gradient(ellipse at 70% 80%,#F8E5EE 0,transparent 60%);}
+  .card{background:#fff;border-radius:26px;width:100%;max-width:420px;padding:36px 32px;box-shadow:0 24px 60px rgba(60,50,110,0.22);}
+  .logo{display:flex;justify-content:center;margin-bottom:10px;color:var(--accent)}
+  h1{font-family:var(--display);font-weight:500;font-size:24px;text-align:center;}
+  .sub{text-align:center;color:var(--muted);font-size:13px;margin:4px 0 22px;}
+  label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px;}
+  .inp{width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;background:#fbfafe;margin-bottom:14px;}
+  .inp:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(76,41,211,.12);}
+  .pass-wrap{position:relative;margin-bottom:14px;}
+  .pass-wrap .inp{padding-right:46px;margin-bottom:0;}
+  .eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;
+    cursor:pointer;padding:7px;color:var(--muted);display:flex;align-items:center;justify-content:center;
+    border-radius:7px;transition:.15s;}
+  .eye:hover,.eye:focus{outline:none;color:var(--accent);background:rgba(76,41,211,.1);}
+  .btn{width:100%;padding:14px;border:none;border-radius:13px;cursor:pointer;background:linear-gradient(135deg,var(--accent2),var(--accent));
+    color:#fff;font-family:inherit;font-weight:700;font-size:15px;}
+  .btn:disabled{opacity:.6}
+  .msg{text-align:center;font-size:13px;margin-top:12px;min-height:1px;}
+  .err{color:var(--danger)} .ok{color:var(--mint);font-weight:600}
+  a{color:var(--accent);text-decoration:none;font-weight:600}
+  .center{text-align:center;margin-top:16px;font-size:13.5px;}
+
+  /* === MOBILE-FIXES (audit pass 1) — reset === */
+  body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+  @media (max-width: 600px){
+    .inp { font-size: 16px !important; }       /* 16px — iOS не зумит на фокус */
+    .eye { padding: 11px !important; min-width: 44px; min-height: 44px; }
+    .btn { padding: 16px !important; min-height: 50px; }
+  }
+</style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="logo"><img src="/static/assets/logo.png" alt="карточка Ai" width="48" height="48" style="display:block;border-radius:11px;"></div>
+    <h1>Новый пароль</h1>
+    <div class="sub" id="sub">Придумайте новый пароль для входа</div>
+    <form id="form">
+      <label>Новый пароль</label>
+      <div class="pass-wrap">
+        <input class="inp" id="p1" type="password" placeholder="минимум 6 символов" autocomplete="new-password">
+        <button type="button" class="eye" data-for="p1" aria-label="Показать пароль" aria-pressed="false" tabindex="-1">
+          <svg class="eye-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+      <label>Повторите пароль</label>
+      <div class="pass-wrap">
+        <input class="inp" id="p2" type="password" placeholder="ещё раз" autocomplete="new-password">
+        <button type="button" class="eye" data-for="p2" aria-label="Показать пароль" aria-pressed="false" tabindex="-1">
+          <svg class="eye-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+      <button class="btn" id="btn" type="submit">Сохранить пароль</button>
+      <div class="msg err" id="msg" style="display:none;"></div>
+    </form>
+    <div class="center"><a href="/">← На главную</a></div>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const token = new URLSearchParams(location.search).get('token') || '';
+  const msg = $('msg');
+  function showErr(t){ msg.textContent=t; msg.className='msg err'; msg.style.display='block'; }
+
+  if (!token) { $('form').style.display='none'; $('sub').textContent='Ссылка недействительна — токен отсутствует.'; }
+
+  document.querySelectorAll('.eye').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const inp = $(btn.dataset.for);
+      if (!inp) return;
+      const show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+      btn.setAttribute('aria-label', show ? 'Скрыть пароль' : 'Показать пароль');
+      btn.querySelector('.eye-on').style.display  = show ? 'none' : '';
+      btn.querySelector('.eye-off').style.display = show ? '' : 'none';
+    });
+  });
+
+  $('form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const p1=$('p1').value, p2=$('p2').value;
+    if (p1.length < 6) { showErr('Пароль минимум 6 символов'); return; }
+    if (p1 !== p2) { showErr('Пароли не совпадают'); return; }
+    const btn=$('btn'); btn.disabled=true; btn.textContent='Сохраняем…'; msg.style.display='none';
+    try {
+      const r = await fetch('/api/account/password-reset/confirm', {
+        method:'POST', credentials:'include', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ token, password: p1 })
+      });
+      const d = await r.json().catch(()=>({}));
+      if (!r.ok) throw new Error(d.error || 'Не удалось сменить пароль');
+      $('card').innerHTML = `<div class="logo"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#62BFA4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg></div>
+        <h1>Пароль изменён</h1><div class="sub">Теперь войдите с новым паролем.</div>
+        <a class="btn" href="/" style="display:block;text-align:center;text-decoration:none;">Войти</a>`;
+    } catch (ex) {
+      btn.disabled=false; btn.textContent='Сохранить пароль';
+      showErr(ex.message);
+    }
+  });
+</script>
+</body>
+</html>

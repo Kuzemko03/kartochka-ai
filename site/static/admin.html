@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b0e15">
+<title>Админка · карточка Ai</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="/static/assets/favicon.png">
+<link rel="apple-touch-icon" href="/static/assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0f0e17; --panel:#1a1825; --panel2:#221f30; --line:rgba(255,255,255,0.08);
+    --text:#ECEAF4; --muted:rgba(236,234,244,0.6); --dim:rgba(236,234,244,0.4);
+    --accent:#8A7FE9; --accent2:#6B4FE0; --mint:#62BFA4; --rose:#E06F93; --amber:#F2B054; --danger:#E0566E;
+    --font:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',monospace; --display:'Fraunces',serif; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;-webkit-font-smoothing:antialiased;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none}
+  .top{position:sticky;top:0;z-index:30;background:rgba(15,14,23,0.85);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);padding:12px 22px;display:flex;align-items:center;gap:16px;}
+  .top h1{font-family:var(--display);font-weight:500;font-size:18px;}
+  .top .who{margin-left:auto;color:var(--muted);font-size:12.5px;}
+  .top .who a{margin-left:14px;}
+  .tabs{display:flex;gap:6px;padding:14px 22px 0;flex-wrap:wrap;}
+  .tab{padding:9px 15px;border-radius:10px 10px 0 0;background:transparent;border:none;color:var(--muted);
+    font-family:inherit;font-weight:600;font-size:13.5px;cursor:pointer;border-bottom:2px solid transparent;}
+  .tab:hover{color:var(--text)}
+  .tab.active{color:var(--text);border-bottom-color:var(--accent);background:var(--panel);}
+  .wrap{padding:22px;max-width:1180px;margin:0 auto;}
+  .view{display:none} .view.show{display:block;animation:f .25s ease}
+  @keyframes f{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 20px;}
+  .card .n{font-family:var(--display);font-size:30px;font-weight:500;letter-spacing:-0.02em;}
+  .card .l{color:var(--muted);font-size:12.5px;margin-top:3px;}
+  .card.accent{background:linear-gradient(135deg,var(--accent2),#3A1FB0);border-color:transparent;}
+  .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;}
+  .chart-box{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;}
+  .chart-title{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between;align-items:baseline;}
+  .chart-title b{color:var(--text);font-family:var(--display);font-size:17px;font-weight:500;}
+  .chart-box svg{display:block;width:100%;height:130px;}
+  /* Токены — barchart по дням */
+  .tok-chart{display:flex;gap:3px;align-items:flex-end;height:140px;padding:0 4px;}
+  /* height:100% обязателен — иначе .tok-bar-fill (height:X%) считает % от
+     auto-высоты родителя = 0 и все столбики схлопывались в min-height:2px
+     (на скрине это была «плоская линия»). Трек flex:1 даёт fill определённую базу. */
+  .tok-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;height:100%;}
+  .tok-bar-track{flex:1 1 auto;width:100%;min-height:0;display:flex;align-items:flex-end;}
+  .tok-bar-fill{width:100%;background:linear-gradient(180deg,#7a4ef0 0%,var(--accent) 70%,#3a1fb0 100%);
+    border-radius:5px 5px 2px 2px;box-shadow:0 2px 8px rgba(76,41,211,.35);
+    transition:height .3s ease;min-height:2px;}
+  .tok-bar.img .tok-bar-fill{background:linear-gradient(180deg,#7ad6bf 0%,var(--mint) 70%,#2f8d74 100%);
+    box-shadow:0 2px 8px rgba(98,191,164,.3);}
+  .tok-bar:hover .tok-bar-fill{filter:brightness(1.12);}
+  .tok-bar-label{font-size:10px;color:var(--muted);transform:rotate(-32deg);transform-origin:center;
+    white-space:nowrap;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px;}
+  .panel h2{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;color:var(--dim);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:8px 10px;border-bottom:1px solid var(--line);}
+  td{padding:10px;border-bottom:1px solid var(--line);}
+  tr:hover td{background:var(--panel2)}
+  .mono{font-family:var(--mono);font-size:12px}
+  .pill{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10.5px;font-weight:700;}
+  .pill.paid{background:rgba(98,191,164,0.18);color:var(--mint)} .pill.pending{background:rgba(242,176,84,0.18);color:var(--amber)}
+  .pill.failed{background:rgba(224,86,110,0.18);color:var(--danger)} .pill.admin{background:rgba(138,127,233,0.2);color:var(--accent)}
+  .pill.on{background:rgba(98,191,164,0.18);color:var(--mint)} .pill.off{background:rgba(255,255,255,0.08);color:var(--dim)}
+  .inp{background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--text);font-family:inherit;font-size:13px;padding:9px 12px;}
+  .inp:focus{outline:none;border-color:var(--accent)}
+  .btn{padding:9px 15px;border-radius:9px;border:none;background:var(--accent2);color:#fff;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;}
+  .btn:hover{background:var(--accent)} .btn.sm{padding:6px 11px;font-size:12px;}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)} .btn.ghost:hover{color:var(--text)}
+  .btn.danger{background:transparent;border:1px solid rgba(224,86,110,0.4);color:var(--danger)} .btn.danger:hover{background:rgba(224,86,110,0.12)}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .gate{text-align:center;padding:100px 20px;}
+  .gate h2{font-family:var(--display);font-size:26px;margin-bottom:10px;}
+  .gate p{color:var(--muted);margin-bottom:20px;}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px;}
+  .modal-bg.show{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;max-width:560px;width:100%;max-height:88vh;overflow:auto;}
+  .modal h3{font-family:var(--display);font-size:20px;margin-bottom:4px;}
+  .modal .sub{color:var(--muted);font-size:12.5px;margin-bottom:18px;}
+  .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px;}
+  .kv span{color:var(--muted)}
+  .muted{color:var(--muted)} .right{text-align:right} .hide{display:none}
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:#fff;color:#111;padding:11px 20px;border-radius:12px;font-weight:600;font-size:13.5px;z-index:99;opacity:0;transition:opacity .25s;box-shadow:0 10px 30px rgba(0,0,0,0.4);}
+
+  /* === MOBILE-FIXES (audit pass 1) — admin === */
+  body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+  .toast { bottom: calc(26px + env(safe-area-inset-bottom)) !important; }
+  @media (max-width: 720px) {
+    body { font-size: 14px; }
+    .tabs { flex-wrap: wrap; }
+    .tab { padding: 10px 12px !important; min-height: 40px; font-size: 13px; }
+    .panel { padding: 16px !important; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .panel table { min-width: 540px; }
+    .modal { padding: 18px !important; max-height: 92dvh; }
+    input, textarea, select { font-size: 16px !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"><div class="gate"><p class="muted">Загрузка…</p></div></div>
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalBox"></div></div>
+
+<script src="/static/account.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const API = '/api/admin';
+async function aFetch(path, opts){
+  const r = await fetch(API+path, Object.assign({credentials:'include'}, opts||{}));
+  let d=null; try{ d=await r.json(); }catch(e){}
+  if(!r.ok){ const e=new Error((d&&d.error)||('HTTP '+r.status)); e.status=r.status; throw e; }
+  return d;
+}
+const fmt = n => Number(n).toLocaleString('ru-RU');
+function relTime(ts){ if(!ts)return'—'; const s=Math.floor((Date.now()-new Date(ts).getTime())/1000);
+  if(s<60)return'только что'; if(s<3600)return Math.floor(s/60)+' мин'; if(s<86400)return Math.floor(s/3600)+' ч';
+  const d=new Date(ts); return d.getDate()+'.'+(d.getMonth()+1)+'.'+d.getFullYear(); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+const TABS = [
+  ['dash','Дашборд'], ['users','Пользователи'], ['purchases','Покупки'],
+  ['promos','Промокоды'], ['gens','Генерации'], ['llm','LLM-цепочка'],
+  ['tokens','Токены/$'], ['settings','Настройки / API'],
+];
+let CURRENT = 'dash';
+
+function shell(me){
+  $('#root').innerHTML = `
+    <div class="top"><h1>⚙ Админка · карточка <em style="font-style:italic;color:var(--accent)">Ai</em></h1>
+      <div class="who">${esc(me.email)} <a href="/">← на сайт</a> <a href="#" onclick="event.preventDefault();Account.logout().then(()=>location.href='/')">выйти</a></div></div>
+    <div class="tabs" id="tabs">${TABS.map(([k,n])=>`<button class="tab ${k===CURRENT?'active':''}" data-k="${k}" onclick="go('${k}')">${n}</button>`).join('')}</div>
+    <div class="wrap">${TABS.map(([k])=>`<div class="view ${k===CURRENT?'show':''}" id="view-${k}"></div>`).join('')}</div>`;
+  go(CURRENT);
+}
+window.go = function(k){
+  CURRENT=k;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.k===k));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('show',v.id==='view-'+k));
+  ({dash:loadDash,users:loadUsers,purchases:loadPurchases,promos:loadPromos,gens:loadGens,llm:loadLlm,tokens:loadTokens,settings:loadSettings}[k])();
+};
+
+async function loadDash(){
+  const v=$('#view-dash'); v.innerHTML='<p class="muted">Загрузка…</p>';
+  try{ const s=await aFetch('/stats');
+    v.innerHTML=`<div class="cards">
+      <div class="card accent"><div class="n">${fmt(s.revenue_rub)} ₽</div><div class="l">выручка всего (${fmt(s.revenue_today_rub)} ₽ сегодня)</div></div>
+      <div class="card"><div class="n">${fmt(s.users_total)}</div><div class="l">пользователей (+${fmt(s.users_today)} сегодня)</div></div>
+      <div class="card"><div class="n">${fmt(s.purchases_paid)}</div><div class="l">оплаченных покупок</div></div>
+      <div class="card"><div class="n">${fmt(s.cards_sold)}</div><div class="l">карточек продано</div></div>
+      <div class="card"><div class="n">${fmt(s.generations_total)}</div><div class="l">генераций (+${fmt(s.generations_today)} сегодня)</div></div>
+      <div class="card"><div class="n">${fmt(s.cards_spent)}</div><div class="l">карточек создано</div></div>
+      <div class="card"><div class="n">${fmt(s.balance_outstanding)}</div><div class="l">карточек на балансах</div></div>
+      <div class="card"><div class="n">${fmt(s.promo_redemptions)}</div><div class="l">активаций промокодов</div></div>
+      <div class="card"><div class="n">${fmt(s.referrals_rewarded)}</div><div class="l">рефералов с оплатой</div></div>
+    </div>
+    <div class="panel"><h2>📈 Динамика за 14 дней</h2>
+      <div class="charts">
+        <div class="chart-box"><div class="chart-title"><span>Выручка, ₽</span><b id="chRevSum">—</b></div><div id="chRevenue"></div></div>
+        <div class="chart-box"><div class="chart-title"><span>Новые пользователи</span><b id="chUsersSum">—</b></div><div id="chUsers"></div></div>
+        <div class="chart-box"><div class="chart-title"><span>Генерации</span><b id="chGensSum">—</b></div><div id="chGens"></div></div>
+        <div class="chart-box"><div class="chart-title"><span>Карточек создано</span><b id="chCardsSum">—</b></div><div id="chCards"></div></div>
+      </div></div>`;
+    loadCharts();
+  }catch(e){ v.innerHTML=`<p class="muted">Ошибка: ${esc(e.message)}</p>`; }
+}
+
+async function loadCharts(){
+  try{
+    const t = await aFetch('/timeseries?days=14');
+    const sum = a => a.reduce((x,y)=>x+(y||0),0);
+    renderChart(document.getElementById('chRevenue'), t.revenue_rub, t.dates, {type:'area', color:'#8A7FE9'});
+    renderChart(document.getElementById('chUsers'),   t.users,       t.dates, {type:'bar',  color:'#62BFA4'});
+    renderChart(document.getElementById('chGens'),    t.generations, t.dates, {type:'bar',  color:'#F2B054'});
+    renderChart(document.getElementById('chCards'),   t.cards_spent, t.dates, {type:'area', color:'#E06F93'});
+    document.getElementById('chRevSum').textContent   = fmt(Math.round(sum(t.revenue_rub)))+' ₽';
+    document.getElementById('chUsersSum').textContent = '+'+sum(t.users);
+    document.getElementById('chGensSum').textContent  = sum(t.generations);
+    document.getElementById('chCardsSum').textContent = sum(t.cards_spent);
+  }catch(e){}
+}
+
+// Лёгкий SVG-график без внешних библиотек (area / bar).
+function renderChart(el, values, labels, opts){
+  if(!el) return;
+  opts = opts || {}; values = values || [];
+  const W=560, H=130, pad=14, bottom=20, n=values.length;
+  const max = Math.max(1, ...values);
+  const color = opts.color || '#8A7FE9';
+  const xL = i => pad + (n<=1?0:i*(W-2*pad)/(n-1));
+  const y  = v => (H-bottom) - (v/max)*(H-bottom-pad);
+  const lab = i => (labels[i]||'').slice(5).replace('-', '.');
+  let s = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">`;
+  s += `<line x1="${pad}" y1="${H-bottom}" x2="${W-pad}" y2="${H-bottom}" stroke="rgba(255,255,255,0.12)"/>`;
+  if(opts.type==='bar'){
+    const seg=(W-2*pad)/Math.max(1,n), bw=seg*0.62;
+    values.forEach((v,i)=>{ const bx=pad+i*seg+(seg-bw)/2, by=y(v);
+      s += `<rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-bottom-by).toFixed(1)}" rx="2" fill="${color}"><title>${labels[i]}: ${v}</title></rect>`; });
+  } else {
+    const pts = values.map((v,i)=>`${xL(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    s += `<polygon points="${pad},${H-bottom} ${pts} ${W-pad},${H-bottom}" fill="${color}" opacity="0.16"/>`;
+    s += `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    values.forEach((v,i)=>{ s += `<circle cx="${xL(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.4" fill="${color}"><title>${labels[i]}: ${v}</title></circle>`; });
+  }
+  s += `<text x="${pad}" y="${H-5}" font-size="9" fill="rgba(255,255,255,0.4)">${lab(0)}</text>`;
+  s += `<text x="${W/2}" y="${H-5}" font-size="9" fill="rgba(255,255,255,0.4)" text-anchor="middle">${lab(Math.floor(n/2))}</text>`;
+  s += `<text x="${W-pad}" y="${H-5}" font-size="9" fill="rgba(255,255,255,0.4)" text-anchor="end">${lab(n-1)}</text>`;
+  s += `</svg>`;
+  el.innerHTML = s;
+}
+
+async function loadUsers(){
+  const v=$('#view-users');
+  v.innerHTML=`<div class="panel"><h2>Пользователи</h2>
+    <div class="row" style="margin-bottom:12px;"><input class="inp" id="uq" placeholder="поиск по email / имени" style="flex:1;min-width:200px;">
+      <button class="btn" onclick="loadUsers()">Найти</button></div>
+    <div id="utable"><p class="muted">Загрузка…</p></div></div>`;
+  const q=(document.getElementById('uq')?.value)||'';
+  try{ const d=await aFetch('/users?q='+encodeURIComponent(q)+'&limit=100');
+    $('#utable').innerHTML=`<table><thead><tr><th>ID</th><th>Email</th><th>Имя</th><th class="right">Баланс</th><th>Роль</th><th>Регистрация</th><th></th></tr></thead><tbody>
+      ${d.users.map(u=>`<tr>
+        <td class="mono">${u.id}</td><td>${esc(u.email)}</td><td>${esc(u.name||'—')}</td>
+        <td class="right mono">${fmt(u.balance_cards)}</td>
+        <td>${u.is_admin?'<span class="pill admin">admin</span>':'<span class="muted">user</span>'}</td>
+        <td class="muted">${relTime(u.created_at)}</td>
+        <td class="right"><button class="btn sm ghost" onclick="userDetail(${u.id})">Открыть</button></td>
+      </tr>`).join('')}</tbody></table>
+      <div class="muted" style="margin-top:10px;font-size:12px;">Всего: ${fmt(d.total)}</div>`;
+    const uq=document.getElementById('uq'); if(uq){ uq.value=q; uq.onkeydown=e=>{if(e.key==='Enter')loadUsers();}; }
+  }catch(e){ $('#utable').innerHTML=`<p class="muted">Ошибка: ${esc(e.message)}</p>`; }
+}
+
+window.userDetail = async function(id){
+  try{ const d=await aFetch('/users/'+id); const u=d.user;
+    openModal(`<h3>${esc(u.email)}</h3><div class="sub">ID ${u.id} · регистрация ${relTime(u.created_at)}</div>
+      <div class="kv"><span>Баланс</span><b>${fmt(u.balance_cards)} карточек</b></div>
+      <div class="kv"><span>Роль</span><b>${u.is_admin?'администратор':'пользователь'}</b></div>
+      <div class="kv"><span>Реф-код</span><b class="mono">${esc(u.referral_code)}</b></div>
+      <div class="kv"><span>Приглашено / оплатили</span><b>${d.referral.invited} / ${d.referral.rewarded}</b></div>
+      <div class="row" style="margin:16px 0;"><input class="inp" id="adjN" type="number" placeholder="±карточки" style="width:120px;">
+        <input class="inp" id="adjNote" placeholder="причина" style="flex:1;min-width:120px;">
+        <button class="btn sm" onclick="doAdjust(${id})">Начислить</button></div>
+      <div class="row" style="margin-bottom:16px;">
+        <button class="btn sm ghost" onclick="doSetAdmin(${id},${u.is_admin?'false':'true'})">${u.is_admin?'Снять админа':'Сделать админом'}</button>
+        <button class="btn sm danger" onclick="doDeleteUser(${id})">Удалить аккаунт</button></div>
+      <h2 style="font-size:13px;margin:10px 0 6px;">Последние операции</h2>
+      <table><tbody>${(d.history.ledger||[]).slice(0,12).map(e=>`<tr>
+        <td>${esc(e.reason)}</td><td class="muted">${relTime(e.created_at)}</td>
+        <td class="right mono" style="color:${e.delta>=0?'var(--mint)':'var(--muted)'}">${e.delta>=0?'+':''}${e.delta}</td></tr>`).join('')||'<tr><td class="muted">пусто</td></tr>'}</tbody></table>`);
+  }catch(e){ toast(e.message); }
+};
+window.doAdjust = async function(id){
+  const n=parseInt(document.getElementById('adjN').value||'0'); if(!n){toast('Введите число');return;}
+  try{ await aFetch('/users/'+id+'/adjust',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({delta:n,note:document.getElementById('adjNote').value})});
+    toast('Баланс изменён'); closeModal(); loadUsers(); }catch(e){ toast(e.message); }
+};
+window.doSetAdmin = async function(id,val){
+  try{ await aFetch('/users/'+id+'/admin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({is_admin:val})});
+    toast('Роль обновлена'); closeModal(); loadUsers(); }catch(e){ toast(e.message); }
+};
+window.doDeleteUser = async function(id){
+  if(!confirm('Удалить аккаунт безвозвратно?'))return;
+  try{ await aFetch('/users/'+id,{method:'DELETE'}); toast('Удалён'); closeModal(); loadUsers(); }catch(e){ toast(e.message); }
+};
+
+async function loadPurchases(){
+  const v=$('#view-purchases'); v.innerHTML='<div class="panel"><h2>Последние покупки</h2><div id="pt"><p class="muted">Загрузка…</p></div></div>';
+  try{ const d=await aFetch('/purchases?limit=100');
+    $('#pt').innerHTML=`<table><thead><tr><th>Дата</th><th>Email</th><th>Что</th><th class="right">Карточек</th><th class="right">Сумма</th><th>Статус</th></tr></thead><tbody>
+      ${d.purchases.map(p=>`<tr><td class="muted">${relTime(p.created_at)}</td><td>${esc(p.email)}</td>
+        <td>${p.kind==='pack'?'Пакет '+esc(p.pack_key||''):'Ползунок'}</td>
+        <td class="right mono">${p.cards}</td><td class="right mono">${fmt(p.amount_rub)} ₽</td>
+        <td><span class="pill ${p.status}">${p.status}</span></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){ $('#pt').innerHTML=`<p class="muted">Ошибка: ${esc(e.message)}</p>`; }
+}
+
+async function loadPromos(){
+  const v=$('#view-promos');
+  v.innerHTML=`<div class="panel"><h2>Создать промокод</h2>
+    <div class="row"><input class="inp" id="pc" placeholder="КОД" style="text-transform:uppercase">
+      <input class="inp" id="pca" type="number" placeholder="карточек" style="width:110px">
+      <input class="inp" id="pcm" type="number" placeholder="лимит активаций (∞ пусто)" style="width:200px">
+      <button class="btn" onclick="createPromo()">Создать</button></div></div>
+    <div class="panel"><h2>Промокоды</h2><div id="plist"><p class="muted">Загрузка…</p></div></div>`;
+  try{ const d=await aFetch('/promos');
+    $('#plist').innerHTML=`<table><thead><tr><th>Код</th><th class="right">Карточек</th><th class="right">Исп.</th><th class="right">Лимит</th><th>Статус</th><th></th></tr></thead><tbody>
+      ${d.promos.map(p=>`<tr><td class="mono">${esc(p.code)}</td><td class="right">${p.cards}</td>
+        <td class="right">${p.used_count}</td><td class="right">${p.max_total_uses??'∞'}</td>
+        <td><span class="pill ${p.active?'on':'off'}">${p.active?'активен':'выкл'}</span></td>
+        <td class="right"><button class="btn sm ghost" onclick="togglePromo(${p.id},${p.active?'false':'true'})">${p.active?'Выключить':'Включить'}</button></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){ $('#plist').innerHTML=`<p class="muted">Ошибка: ${esc(e.message)}</p>`; }
+}
+window.createPromo = async function(){
+  const code=document.getElementById('pc').value.trim().toUpperCase();
+  const cards=parseInt(document.getElementById('pca').value||'0');
+  const max=document.getElementById('pcm').value? parseInt(document.getElementById('pcm').value):null;
+  if(!code||!cards){toast('Код и число карточек обязательны');return;}
+  try{ await aFetch('/promos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,cards,max_total_uses:max,per_user_limit:1})});
+    toast('Создан'); loadPromos(); }catch(e){ toast(e.message); }
+};
+window.togglePromo = async function(id,val){
+  try{ await aFetch('/promos/'+id+'/toggle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({active:val})});
+    loadPromos(); }catch(e){ toast(e.message); }
+};
+
+async function loadGens(){
+  const v=$('#view-gens'); v.innerHTML='<div class="panel"><h2>Генерации (мониторинг)</h2><div id="gt"><p class="muted">Загрузка…</p></div></div>';
+  try{ const d=await aFetch('/generations?limit=100');
+    $('#gt').innerHTML=`<table><thead><tr><th>Дата</th><th>Email</th><th>Товар</th><th class="right">%</th><th>Статус</th></tr></thead><tbody>
+      ${d.generations.map(g=>`<tr><td class="muted">${relTime(g.created_at)}</td><td>${esc(g.email)}</td>
+        <td>${esc(g.title||'—')}</td><td class="right mono">${g.progress||0}%</td>
+        <td><span class="pill ${g.status==='done'?'paid':(g.status==='error'?'failed':'pending')}">${esc(g.status)}</span></td></tr>`).join('')||'<tr><td class="muted">пока нет</td></tr>'}</tbody></table>`;
+  }catch(e){ $('#gt').innerHTML=`<p class="muted">Ошибка: ${esc(e.message)}</p>`; }
+}
+
+// ── LLM token usage ────────────────────────────────────────────────────────
+// Видит ВСЕ Claude/OpenAI вызовы, сколько токенов улетело, сколько долларов.
+// Фильтр по дням + по конкретному user_id. Раньше ноль видимости — теперь
+// видим разрезы: модели / purpose / endpoint / юзеры / дневная динамика.
+const TOK_STATE = { days: 14, userId: null };
+
+async function loadTokens(){
+  const v = $('#view-tokens'); v.innerHTML = '<p class="muted">Загрузка…</p>';
+  const qs = (extra='') => `?days=${TOK_STATE.days}` + (TOK_STATE.userId ? `&user_id=${TOK_STATE.userId}` : '') + extra;
+  try {
+    const [sum, byDay, byUser] = await Promise.all([
+      aFetch('/llm-usage/summary'+qs()),
+      aFetch('/llm-usage/by-day'+qs()),
+      aFetch('/llm-usage/by-user'+qs()),
+    ]);
+    v.innerHTML = renderTokensView(sum, byDay, byUser);
+  } catch(e){
+    v.innerHTML = `<p class="muted">Ошибка: ${esc(e.message)}</p>`;
+  }
+}
+
+function tokFmt(n){ n = Number(n||0); if (n >= 1e6) return (n/1e6).toFixed(2)+' М'; if (n >= 1e3) return (n/1e3).toFixed(1)+'k'; return String(Math.round(n)); }
+function usdFmt(n){ n = Number(n||0); if (n >= 100) return '$'+n.toFixed(0); if (n >= 1) return '$'+n.toFixed(2); return '$'+n.toFixed(4); }
+
+function renderTokensView(sum, byDay, byUser){
+  const t = sum.totals || {};
+  const today = sum.today || {};
+  const grp = sum.by_provider_group || {};
+  const priced = grp.priced || {};
+  const claude = grp.claude || {};
+  const cacheHit = Number(t.p_in) ? Math.round((Number(t.p_cached||0)/Number(t.p_in))*100) : 0;
+  const userFilter = TOK_STATE.userId ? `<span class="muted" style="font-size:12px;">фильтр по юзеру <b>#${TOK_STATE.userId}</b> <a href="#" onclick="event.preventDefault();tokSetUser(null)" style="color:var(--accent)">× очистить</a></span>` : '';
+
+  // bar chart (inline) для daily — токены
+  const days = byDay.days || [];
+  const maxTotal = Math.max(1, ...days.map(d => Number(d.p_total||0)));
+  const bars = days.map(d => {
+    const h = Math.max(2, Math.round((Number(d.p_total||0) / maxTotal) * 100));
+    const day = String(d.day || '').slice(5);   // MM-DD
+    const cost = usdFmt(d.cost);
+    return `<div class="tok-bar" title="${day}: ${tokFmt(d.p_total)} токенов (${cost})">
+      <div class="tok-bar-track"><div class="tok-bar-fill" style="height:${h}%;"></div></div>
+      <div class="tok-bar-label">${day}</div>
+    </div>`;
+  }).join('');
+
+  // bar chart (inline) для daily — фото-генерации
+  const maxImg = Math.max(1, ...days.map(d => Number(d.images||0)));
+  const imgBars = days.map(d => {
+    const n = Number(d.images||0);
+    const h = n > 0 ? Math.max(4, Math.round((n / maxImg) * 100)) : 0;
+    const day = String(d.day || '').slice(5);
+    return `<div class="tok-bar img" title="${day}: ${n} фото (${usdFmt(d.img_cost)})">
+      <div class="tok-bar-track"><div class="tok-bar-fill" style="height:${h}%;"></div></div>
+      <div class="tok-bar-label">${day}</div>
+    </div>`;
+  }).join('');
+
+  // Картинки — агрегаты для плиток / таблицы провайдеров.
+  const img = sum.images || {};
+  const imgT = img.totals || {};
+  const imgToday = img.today || {};
+  const imgProv = img.by_provider || [];
+  const imgGptCost = imgProv.filter(p => /openai|gpt/i.test(p.provider))
+                            .reduce((a,p)=>a+Number(p.cost||0),0);
+
+  return `
+    <div class="panel">
+      <div class="row" style="justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <div>
+          <h2 style="margin:0;">Токены и стоимость LLM-вызовов</h2>
+          <div class="muted" style="font-size:12.5px;margin-top:4px;">
+            Окно: <b>${TOK_STATE.days}</b> дн. ${userFilter}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          ${[7,14,30,90].map(d => `<button class="btn sm ${d===TOK_STATE.days?'':'ghost'}" onclick="tokSetDays(${d})">${d}д</button>`).join('')}
+        </div>
+      </div>
+
+      <div class="row" style="gap:14px;flex-wrap:wrap;margin-bottom:14px;">
+        ${tokTile('Сегодня', tokFmt(today.p_total), `${usdFmt(today.cost)} · ${today.calls||0} вызов(ов)`)}
+        ${tokTile('Всего за окно', tokFmt(t.p_total), `${usdFmt(t.cost)} · ${t.calls||0} вызов(ов)`)}
+        ${tokTile('Input токены', tokFmt(t.p_in), `из кеша ${tokFmt(t.p_cached)} · ${cacheHit}%`)}
+        ${tokTile('Output токены', tokFmt(t.p_out), '')}
+      </div>
+
+      <div class="row" style="gap:14px;flex-wrap:wrap;margin-bottom:18px;">
+        ${tokTile('💵 Платно · OpenAI/OpenRouter', usdFmt(priced.cost), `${tokFmt(priced.p_total)} токенов · ${priced.calls||0} вызов(ов)`)}
+        ${tokTile('🟣 Claude-прокси · без цены', tokFmt(claude.p_total), `${claude.calls||0} вызов(ов) · только расход токенов`)}
+        ${tokTile('💾 Из кеша (дешевле)', tokFmt(t.p_cached), `${cacheHit}% входных токенов`)}
+      </div>
+
+      <h3 style="font-size:14px;margin:4px 0 8px;">🖼 Генерации фото</h3>
+      <div class="row" style="gap:14px;flex-wrap:wrap;margin-bottom:14px;">
+        ${tokTile('Фото за окно', tokFmt(imgT.images), `всего · сегодня ${imgToday.images||0}`)}
+        ${tokTile('💸 Потрачено на фото', usdFmt(imgT.cost), `${imgT.images||0} картинок (GPT-Image)`)}
+        ${tokTile('🤖 GPT-Image · $', usdFmt(imgGptCost), 'gpt-image-2 (оценка по прайсу)')}
+        ${tokTile('⚡ FastGen фото', fmt(Math.max(0, (imgT.images||0) - (imgProv.filter(p=>/openai|gpt/i.test(p.provider)).reduce((a,p)=>a+Number(p.images||0),0)))), 'без счёта денег — только штук')}
+      </div>
+
+      <div class="row" style="gap:14px;align-items:stretch;flex-wrap:wrap;margin-bottom:18px;">
+        <div style="flex:1;min-width:280px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 16px 12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <b style="font-size:13.5px;">Токены по дням</b>
+            <span class="muted" style="font-size:11.5px;">высота = total tokens</span>
+          </div>
+          <div class="tok-chart">${bars || '<div class="muted" style="padding:30px 0;text-align:center;">Нет данных за окно</div>'}</div>
+        </div>
+        <div style="flex:1;min-width:280px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 16px 12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <b style="font-size:13.5px;">Фото по дням</b>
+            <span class="muted" style="font-size:11.5px;">высота = кол-во картинок</span>
+          </div>
+          <div class="tok-chart">${imgBars || '<div class="muted" style="padding:30px 0;text-align:center;">Нет фото за окно</div>'}</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;margin:4px 0 8px;">По провайдерам картинок</h3>
+      ${imgProvTable(imgProv)}
+
+      <div class="row" style="gap:14px;align-items:flex-start;flex-wrap:wrap;">
+        <div style="flex:1;min-width:280px;">
+          <h3 style="font-size:14px;margin-bottom:8px;">По моделям</h3>
+          ${tokTable(sum.by_model || [], ['model','calls','p_in','p_cached','p_out','p_total','cost'], ['Модель','Вызовы','In','Кеш','Out','Total','$'])}
+        </div>
+        <div style="flex:1;min-width:280px;">
+          <h3 style="font-size:14px;margin-bottom:8px;">По назначению</h3>
+          ${tokTable(sum.by_purpose || [], ['purpose','calls','p_total','cost'], ['Purpose','Вызовы','Total','$'])}
+          <h3 style="font-size:14px;margin:14px 0 8px;">По endpoint</h3>
+          ${tokTable(sum.by_endpoint || [], ['endpoint','calls','p_total','cost'], ['Endpoint','Вызовы','Total','$'])}
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;margin:18px 0 8px;">Топ пользователей за окно</h3>
+      ${tokUserTable(byUser.users || [])}
+    </div>`;
+}
+
+function tokTile(label, value, sub){
+  return `<div style="flex:1;min-width:140px;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;padding:14px 16px;">
+    <div class="muted" style="font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;">${esc(label)}</div>
+    <div style="font-size:22px;font-weight:800;margin-top:6px;color:var(--text);">${esc(value)}</div>
+    ${sub ? `<div class="muted" style="font-size:12px;margin-top:3px;">${esc(sub)}</div>` : ''}
+  </div>`;
+}
+
+function tokTable(rows, fields, headers){
+  if (!rows.length) return '<div class="muted" style="padding:12px 0;">Пусто</div>';
+  return `<table style="width:100%;font-size:12.5px;"><thead><tr>${
+    headers.map(h => `<th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:600;">${esc(h)}</th>`).join('')
+  }</tr></thead><tbody>${rows.map(r => `<tr>${fields.map(f => {
+    let v = r[f]; if (v == null) v = '';
+    if (f === 'cost') v = (r.model && /^claude/i.test(r.model)) ? '— (не считаем)' : usdFmt(v);
+    else if (f.startsWith('p_')) v = tokFmt(v);
+    return `<td style="padding:6px 8px;border-top:1px solid var(--line);">${esc(String(v))}</td>`;
+  }).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+// человекочитаемые названия провайдеров картинок
+const IMG_PROV_LABEL = {
+  'openai_direct':'GPT-Image 2 (прямой OpenAI)', 'fastgen_openai':'ChatGPT Image (FastGen)',
+  'fastgen_nanopro':'Nano Banana Pro', 'fastgen_nanobanana2':'Nano Banana 2',
+  'fastgen_gemini':'Nano Banana 2', 'fastgen_imagen':'Imagen 4', 'fastgen_flower':'Flower',
+  'fastgen_grok':'Grok', 'veononstop':'VeoNonStop', 'legacy':'до трекинга (старые)',
+};
+function imgProvLabel(p){ return IMG_PROV_LABEL[p] || p || '—'; }
+
+function imgProvTable(rows){
+  if (!rows.length) return '<div class="muted" style="padding:12px 0;">Пока нет фото-генераций за окно</div>';
+  const isGpt = p => /openai|gpt/i.test(p);
+  return `<table style="width:100%;font-size:12.5px;"><thead><tr>
+    ${['Провайдер','Фото','$'].map((h,i)=>`<th style="text-align:${i?'right':'left'};padding:6px 8px;color:var(--muted);font-weight:600;">${h}</th>`).join('')}
+  </tr></thead><tbody>${rows.map(r => `<tr>
+    <td style="padding:6px 8px;border-top:1px solid var(--line);">${esc(imgProvLabel(r.provider))}</td>
+    <td style="padding:6px 8px;border-top:1px solid var(--line);text-align:right;">${fmt(r.images||0)}</td>
+    <td style="padding:6px 8px;border-top:1px solid var(--line);text-align:right;">${isGpt(r.provider) ? usdFmt(r.cost) : '<span class="muted">— только штук</span>'}</td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function tokUserTable(users){
+  if (!users.length) return '<div class="muted">Нет данных</div>';
+  return `<table style="width:100%;font-size:12.5px;"><thead><tr>
+    <th style="text-align:left;padding:6px 8px;color:var(--muted);">ID</th>
+    <th style="text-align:left;padding:6px 8px;color:var(--muted);">Email</th>
+    <th style="text-align:right;padding:6px 8px;color:var(--muted);">🖼 Фото</th>
+    <th style="text-align:right;padding:6px 8px;color:var(--muted);">$ фото</th>
+    <th style="text-align:right;padding:6px 8px;color:var(--muted);">Вызовы</th>
+    <th style="text-align:right;padding:6px 8px;color:var(--muted);">Total tokens</th>
+    <th style="text-align:right;padding:6px 8px;color:var(--muted);">$</th>
+    <th style="padding:6px 8px;"></th>
+  </tr></thead><tbody>${users.map(u => `<tr>
+    <td style="padding:6px 8px;border-top:1px solid var(--line);">${u.user_id ?? '—'}</td>
+    <td style="padding:6px 8px;border-top:1px solid var(--line);">${esc(u.email || '(гость/система)')}</td>
+    <td style="padding:6px 8px;border-top:1px solid var(--line);text-align:right;font-weight:700;">${fmt(u.img_count||0)}</td>
+    <td style="padding:6px 8px;border-top:1px solid var(--line);text-align:right;">${usdFmt(u.img_cost||0)}</td>
+    <td style="padding:6px 8px;border-top:1px solid var(--line);text-align:right;">${u.calls}</td>
+    <td style="padding:6px 8px;border-top:1px solid var(--line);text-align:right;">${tokFmt(u.p_total)}</td>
+    <td style="padding:6px 8px;border-top:1px solid var(--line);text-align:right;">${usdFmt(u.cost)}</td>
+    <td style="padding:6px 8px;border-top:1px solid var(--line);text-align:right;">
+      ${u.user_id ? `<button class="btn sm ghost" onclick="tokSetUser(${u.user_id})">фильтр</button>` : ''}
+    </td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+window.tokSetDays = d => { TOK_STATE.days = d; loadTokens(); };
+window.tokSetUser = uid => { TOK_STATE.userId = uid; loadTokens(); };
+
+// ── LLM endpoint chain (drag to reorder, toggle on/off, ping live) ─────────
+async function loadLlm(){
+  const v=$('#view-llm'); v.innerHTML='<p class="muted">Загрузка…</p>';
+  try{
+    const d = await aFetch('/llm-endpoints');
+    const eps = d.endpoints || [];
+    v.innerHTML = `
+      <div class="panel">
+        <h2>Порядок LLM endpoints</h2>
+        <p class="muted" style="margin:-6px 0 14px;font-size:13px;line-height:1.5;">
+          Цепочка идёт сверху вниз. Первый живой возвращает ответ. Перетащи блок мышкой за <b>⋮⋮</b>,
+          чтобы поменять приоритет. Тоггл — выключает endpoint целиком (он не будет даже пробоваться).
+          <b>Тест</b> — мини-запрос «reply OK», показывает живой провайдер или нет.
+          Изменения применяются сразу, без рестарта.
+        </p>
+        <div id="llmList" style="display:flex;flex-direction:column;gap:10px;">
+          ${eps.map((ep,i)=>llmCard(ep, i+1)).join('')}
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn" onclick="llmSaveOrder()">💾 Сохранить порядок</button>
+          <button class="btn ghost" onclick="llmTestAll()">⚡ Прозвонить все</button>
+          <button class="btn ghost" onclick="loadLlm()">↻ Обновить</button>
+        </div>
+        <div id="llmStatus" class="muted" style="margin-top:12px;font-size:12.5px;"></div>
+      </div>`;
+    llmInitDnD();
+  }catch(e){
+    v.innerHTML = `<p class="muted">Ошибка: ${esc(e.message)}</p>`;
+  }
+}
+function llmCard(ep, n){
+  const dotColor = ep.enabled ? 'var(--mint)' : '#c4c0d0';
+  return `
+    <div class="llm-block" data-name="${esc(ep.name)}" draggable="true"
+         style="border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);
+                display:grid;grid-template-columns:24px 28px 1fr auto;gap:14px;align-items:center;${ep.enabled?'':'opacity:.55;'}">
+      <div class="drag-handle" style="cursor:grab;font-size:18px;color:var(--muted);user-select:none;line-height:1;" title="Тащи чтобы поменять порядок">⋮⋮</div>
+      <div style="font-weight:800;color:var(--accent);font-size:16px;text-align:center;">${n}</div>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${dotColor};display:inline-block;"></span>
+          <b style="font-size:14.5px;">${esc(ep.name)}</b>
+          ${ep.has_proxy ? `<span title="${esc(ep.proxy_masked)}" style="font-size:11px;padding:2px 6px;border-radius:6px;background:rgba(76,41,211,.1);color:var(--accent);">через прокси</span>` : ''}
+        </div>
+        <div class="muted" style="font-size:12px;word-break:break-all;">${esc(ep.base_url)}</div>
+        <div class="muted" style="font-size:11.5px;margin-top:2px;">Модели: ${esc((ep.models||[]).join(', '))||'—'}</div>
+        <div id="llm-ping-${esc(ep.name)}" style="font-size:12px;margin-top:6px;"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;">
+          <input type="checkbox" class="llm-toggle" data-name="${esc(ep.name)}" ${ep.enabled?'checked':''}>
+          <span>вкл</span>
+        </label>
+        <button class="btn sm ghost" onclick="llmTest('${esc(ep.name)}')">🩺 Тест</button>
+      </div>
+    </div>`;
+}
+function llmInitDnD(){
+  const list = document.getElementById('llmList');
+  if (!list) return;
+  let dragEl = null;
+  list.querySelectorAll('.llm-block').forEach(el => {
+    el.addEventListener('dragstart', e => { dragEl = el; el.style.opacity = '.4'; });
+    el.addEventListener('dragend',   e => { if (dragEl) dragEl.style.opacity = ''; dragEl = null; llmRenumber(); });
+    el.addEventListener('dragover',  e => {
+      e.preventDefault();
+      const after = (e.clientY - el.getBoundingClientRect().top) > el.offsetHeight / 2;
+      if (!dragEl || dragEl === el) return;
+      list.insertBefore(dragEl, after ? el.nextSibling : el);
+    });
+  });
+}
+function llmRenumber(){
+  document.querySelectorAll('#llmList .llm-block').forEach((el,i)=>{
+    const numCell = el.children[1];
+    if (numCell) numCell.textContent = String(i+1);
+  });
+}
+async function llmSaveOrder(){
+  const order = Array.from(document.querySelectorAll('#llmList .llm-block')).map(el => el.dataset.name);
+  const enabled = {};
+  document.querySelectorAll('.llm-toggle').forEach(cb => { enabled[cb.dataset.name] = cb.checked; });
+  const status = $('#llmStatus');
+  status.textContent = 'Сохраняю...';
+  try{
+    await aFetch('/llm-endpoints/order', {
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({order, enabled})
+    });
+    status.textContent = '✓ Сохранено. Следующий запрос пойдёт в новом порядке.';
+    status.style.color = 'var(--mint)';
+    setTimeout(()=>{ status.style.color=''; loadLlm(); }, 1200);
+  }catch(e){
+    status.textContent = '✗ ' + e.message; status.style.color = 'var(--danger)';
+  }
+}
+async function llmTest(name){
+  const out = $('#llm-ping-'+name);
+  if (!out) return;
+  out.innerHTML = '<span class="muted">пингую…</span>';
+  try{
+    const r = await aFetch('/llm-endpoints/test', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({name})
+    });
+    if (r.ok){
+      out.innerHTML = `<span style="color:var(--mint);">✓ живой (${r.ms} мс, ${esc(r.model||'')})</span>`;
+    }else{
+      out.innerHTML = `<span style="color:var(--danger);">✗ ${esc(r.error||'fail')} <span class="muted">(${r.ms||0} мс)</span></span>`;
+    }
+  }catch(e){
+    out.innerHTML = `<span style="color:var(--danger);">✗ ${esc(e.message)}</span>`;
+  }
+}
+async function llmTestAll(){
+  const names = Array.from(document.querySelectorAll('#llmList .llm-block')).map(el => el.dataset.name);
+  for (const n of names){ await llmTest(n); }
+}
+
+async function loadSettings(){
+  const v=$('#view-settings'); v.innerHTML='<p class="muted">Загрузка…</p>';
+  try{ const s=await aFetch('/settings');
+    const PROV_OPTS = [
+      {v:'fastgen_openai',     l:'ChatGPT Image (через FastGen) · 1 credit · дёшево'},
+      {v:'fastgen_nanopro',    l:'Nano Banana Pro · 4 credits · точная идентичность'},
+      {v:'fastgen_nanobanana2', l:'Nano Banana 2 · 1 credit · быстро'},
+      {v:'fastgen_imagen',     l:'Imagen 4 (Google) · 4 credits · художественное'},
+      {v:'fastgen_flower',     l:'Flower · 1 credit · 1 реф'},
+      {v:'fastgen_grok',       l:'Grok · 1 credit · 5 рефов'},
+      {v:'openai_direct',      l:'GPT Image 2 (прямой OpenAI · платный, quality/size снизу)'},
+    ];
+    const curProv = s.default_provider || 'fastgen_openai';
+    if (!PROV_OPTS.some(o=>o.v===curProv)) PROV_OPTS.unshift({v:curProv, l:curProv+' (custom)'});
+    const provSelect = `<select class="inp" id="sProv" style="flex:1">${
+      PROV_OPTS.map(o=>`<option value="${esc(o.v)}" ${o.v===curProv?'selected':''}>${esc(o.l)}</option>`).join('')
+    }</select>`;
+    v.innerHTML=`<div class="panel"><h2>Общие</h2>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">Провайдер картинок</label>${provSelect}</div>
+      <div class="muted" style="font-size:12px;margin:0 0 12px 180px;">Дефолт-провайдер. <b>Если включена тир-политика ниже — она перебивает этот выбор</b> (платным → GPT medium, новым → по настройке).</div>
+
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">Тир-политика качества</label>
+        <label style="flex:1;display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="sTierOn" ${s.tier_policy_enabled?'checked':''}> <span class="muted" style="font-size:13px;">платным (оплатили карточки) → GPT medium · новым (бесплатная проба) → ниже</span></label></div>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">Новым/бесплатным юзерам</label>
+        <select class="inp" id="sNewProv" style="flex:1">
+          ${[['mix','Микс: Nano Pro + GPT Image low (чередуем по карточкам)'],['fastgen_nanopro','Только FastGen Nano Pro (без счёта денег)'],['openai_low','Только GPT Image low (≈$0.011/шт)']].map(([val,lbl])=>`<option value="${val}" ${(s.new_user_provider||'mix')===val?'selected':''}>${lbl}</option>`).join('')}
+        </select></div>
+      <div class="muted" style="font-size:12px;margin:0 0 12px 180px;">Качество платных = «GPT Image 2 → Качество» (ниже, сейчас medium). Применяется к НОВЫМ генерациям сразу, без рестарта.</div>
+
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">Домен сайта (реф-ссылки)</label><input class="inp" id="sSite" value="${esc(s.site_base_url||'')}" style="flex:1"></div>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">Админы (email через запятую)</label><input class="inp" id="sAdmins" value="${esc((s.admin_emails||[]).join(', '))}" style="flex:1"></div>
+      <button class="btn" onclick="saveGeneral()">Сохранить</button></div>
+
+      <div class="panel"><h2>Прокси нейронки</h2>
+      <div class="muted" style="font-size:12px;margin-bottom:10px;">Единый HTTP-прокси для всех запросов нейронки (анализ + генерация карточек). Выключите тумблер — нейронка пойдёт <b>напрямую</b>, без прокси. Применяется в реал-тайме после «Сохранить», без рестарта.</div>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">Использовать прокси</label>
+        <label style="flex:1;display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="sAiPxOn" ${(s.ai_proxy&&s.ai_proxy.enabled)?'checked':''} onchange="_aiPxLbl()"> <span class="muted" id="sAiPxLbl" style="font-size:13px;">${(s.ai_proxy&&s.ai_proxy.enabled)?'включено — запросы идут через прокси':'выключено — нейронка работает напрямую'}</span></label></div>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">HTTP-прокси</label>
+        <input class="inp" id="sAiPxUrl" placeholder="${esc((s.ai_proxy&&s.ai_proxy.has_url)?s.ai_proxy.url_masked:'http://логин:пароль@хост:порт')}" style="flex:1"></div>
+      <div class="muted" style="font-size:12px;margin:0 0 10px 180px;">Формат: <code>http://логин:пароль@хост:порт</code>. Оставьте поле пустым, чтобы не менять текущий прокси (показан замаскированно).</div>
+      <button class="btn" onclick="saveAiProxy()">Сохранить прокси</button></div>
+
+      <div class="panel"><h2>Ключи генерации</h2>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">FastGen API key</label><input class="inp" id="sFg" placeholder="${esc(s.fastgen_api_key_masked||'—')}" style="flex:1"></div>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">FastGen base URL</label><input class="inp" id="sFgU" value="${esc(s.fastgen_base_url||'')}" style="flex:1"></div>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">Veo API key</label><input class="inp" id="sVeo" placeholder="${esc(s.veo_api_key_masked||'—')}" style="flex:1"></div>
+      <div class="muted" style="font-size:12px;margin-bottom:10px;">Оставьте поле пустым, чтобы не менять ключ. Показаны замаскированные значения.</div>
+      <button class="btn" onclick="saveKeys()">Сохранить ключи</button></div>
+
+      <div class="panel"><h2>GPT Image 2 (прямой OpenAI)</h2>
+      <div class="muted" style="font-size:12px;margin-bottom:10px;">Активно когда «Провайдер картинок» выше = «GPT Image 2 (прямой OpenAI…)». Переключатель применяется в реал-тайме после «Сохранить».</div>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">Качество</label>
+        <select class="inp" id="sOaiQ" style="flex:1">
+          ${['high','medium','low','auto'].map(q=>`<option value="${q}" ${(s.openai_image_quality||'high')===q?'selected':''}>${q}${q==='high'?' — лучшее (≈$0.21/шт 1024)':''}${q==='medium'?' — средне (≈$0.05/шт 1024)':''}${q==='low'?' — дёшево (≈$0.006/шт 1024)':''}${q==='auto'?' — модель решит сама':''}</option>`).join('')}
+        </select></div>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">Размер</label>
+        <select class="inp" id="sOaiSz" style="flex:1">
+          ${['auto','1024x1024','1024x1536','1536x1024'].map(z=>`<option value="${z}" ${(s.openai_image_size||'auto')===z?'selected':''}>${z}${z==='auto'?' — по aspect_ratio запроса':''}${z==='1024x1536'?' — вертикаль (WB карточка)':''}${z==='1536x1024'?' — горизонталь':''}${z==='1024x1024'?' — квадрат':''}</option>`).join('')}
+        </select></div>
+      <div class="muted" style="font-size:12px;margin:0 0 10px 180px;">gpt-image-2 всегда держит реф в режиме high fidelity по умолчанию — отдельный параметр не нужен.</div>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">OpenAI API key</label><input class="inp" id="sOaiKey" placeholder="${esc(s.openai_image_api_key_masked||'если пусто — берём из claude_endpoints/openai-fallback')}" style="flex:1"></div>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">Base URL</label><input class="inp" id="sOaiBase" value="${esc(s.openai_image_base_url||'https://api.openai.com/v1')}" style="flex:1"></div>
+      <div class="row" style="margin-bottom:10px;"><label class="muted" style="width:180px;">Модель</label><input class="inp" id="sOaiModel" value="${esc(s.openai_image_model||'gpt-image-2')}" style="flex:1"></div>
+      <button class="btn" onclick="saveOpenaiImage()">Сохранить GPT Image 2</button></div>
+
+      <div class="panel"><h2>Claude endpoints</h2><div id="ceps">${(s.claude_endpoints||[]).map((ep,i)=>`
+        <div style="border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;">
+          <div class="row" style="margin-bottom:8px;"><b style="width:120px">${esc(ep.name)}</b>
+            <input class="inp" data-ep="${esc(ep.name)}" data-f="base_url" value="${esc(ep.base_url||'')}" style="flex:1" placeholder="base_url"></div>
+          <div class="row" style="margin-bottom:8px;"><label class="muted" style="width:120px">API key</label>
+            <input class="inp" data-ep="${esc(ep.name)}" data-f="api_key" placeholder="${esc(ep.api_key_masked||'—')}" style="flex:1"></div>
+          <div class="row"><label class="muted" style="width:120px">Модели</label>
+            <input class="inp" data-ep="${esc(ep.name)}" data-f="models" value="${esc((ep.models||[]).join(', '))}" style="flex:1"></div>
+        </div>`).join('')}</div>
+      <button class="btn" onclick="saveEndpoints()">Сохранить endpoints</button></div>`;
+  }catch(e){ v.innerHTML=`<p class="muted">Ошибка: ${esc(e.message)}</p>`; }
+}
+async function putSettings(body){ await aFetch('/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); }
+window.saveGeneral = async function(){
+  try{ await putSettings({ default_provider:$('#sProv').value.trim(), site_base_url:$('#sSite').value.trim(),
+    tier_policy_enabled:$('#sTierOn').checked, new_user_provider:$('#sNewProv').value,
+    admin_emails:$('#sAdmins').value.split(',').map(s=>s.trim()).filter(Boolean) }); toast('Сохранено'); }catch(e){toast(e.message);}
+};
+window.saveKeys = async function(){
+  const b={}; if($('#sFg').value.trim())b.fastgen_api_key=$('#sFg').value.trim();
+  if($('#sFgU').value.trim())b.fastgen_base_url=$('#sFgU').value.trim();
+  if($('#sVeo').value.trim())b.veo_api_key=$('#sVeo').value.trim();
+  try{ await putSettings(b); toast('Ключи сохранены'); loadSettings(); }catch(e){toast(e.message);}
+};
+window._aiPxLbl = function(){
+  const on = $('#sAiPxOn') && $('#sAiPxOn').checked;
+  const el = $('#sAiPxLbl');
+  if (el) el.textContent = on ? 'включено — запросы идут через прокси' : 'выключено — нейронка работает напрямую';
+};
+window.saveAiProxy = async function(){
+  const enabled = $('#sAiPxOn').checked;
+  const url = ($('#sAiPxUrl').value || '').trim();
+  const ai_proxy = { enabled };
+  if (url) ai_proxy.url = url;   // пустое поле — не трогаем сохранённый url
+  try{ await putSettings({ ai_proxy }); toast(enabled?'Прокси включён':'Прокси выключен — нейронка напрямую'); loadSettings(); }catch(e){toast(e.message);}
+};
+window.saveOpenaiImage = async function(){
+  const b = {
+    openai_image_quality: ($('#sOaiQ').value || 'high'),
+    openai_image_size:    ($('#sOaiSz').value || 'auto'),
+    openai_image_base_url: ($('#sOaiBase').value || '').trim() || 'https://api.openai.com/v1',
+    openai_image_model:    ($('#sOaiModel').value || '').trim() || 'gpt-image-2',
+  };
+  const k = ($('#sOaiKey').value || '').trim();
+  if (k) b.openai_image_api_key = k;
+  try{ await putSettings(b); toast('GPT Image 2 сохранён (применилось без рестарта)'); loadSettings(); }catch(e){toast(e.message);}
+};
+window.saveEndpoints = async function(){
+  const map={};
+  document.querySelectorAll('[data-ep]').forEach(inp=>{ const n=inp.dataset.ep, f=inp.dataset.f;
+    map[n]=map[n]||{name:n}; let val=inp.value.trim();
+    if(f==='models') map[n].models=val? val.split(',').map(s=>s.trim()).filter(Boolean):[];
+    else if(val) map[n][f]=val; });
+  try{ await putSettings({claude_endpoints:Object.values(map)}); toast('Endpoints сохранены'); loadSettings(); }catch(e){toast(e.message);}
+};
+
+function openModal(html){ $('#modalBox').innerHTML=html+'<div style="text-align:right;margin-top:16px;"><button class="btn ghost sm" onclick="closeModal()">Закрыть</button></div>'; $('#modalBg').classList.add('show'); }
+window.closeModal=function(){ $('#modalBg').classList.remove('show'); };
+window.toast=function(m){ let el=$('#toast'); if(!el){el=document.createElement('div');el.id='toast';el.className='toast';document.body.appendChild(el);} el.textContent=m; el.style.opacity='1'; clearTimeout(window._tt); window._tt=setTimeout(()=>el.style.opacity='0',2400); };
+
+(async function(){
+  const me = await Account.me();
+  if(!me){ $('#root').innerHTML=`<div class="gate"><h2>Вход для администратора</h2><p>Войдите аккаунтом с правами админа.</p><button class="btn" onclick="Account.openAuth({mode:'login',onSuccess:()=>location.reload()})">Войти</button></div>`; return; }
+  if(!me.is_admin){ $('#root').innerHTML=`<div class="gate"><h2>Доступ запрещён</h2><p>${esc(me.email)} — не администратор.</p><a class="btn" href="/">На сайт</a></div>`; return; }
+  shell(me);
+})();
+</script>
+</body>
+</html>

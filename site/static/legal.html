@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#eef0f4">
+<title>Правовые документы · карточка Ai</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="/static/assets/favicon.png">
+<link rel="apple-touch-icon" href="/static/assets/logo.png">
+<link rel="manifest" href="/static/manifest.json">
+<meta name="apple-mobile-web-app-title" content="карточка Ai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F2FA; --text:#1F1A35; --muted:rgba(31,26,53,0.7); --dim:rgba(31,26,53,0.5);
+    --accent:#4C29D3; --accent-soft:#8A7FE9; --glass:rgba(255,255,255,0.75);
+    --border:rgba(255,255,255,0.7); --shadow:0 8px 32px rgba(60,50,110,0.12);
+    --font-display:'Fraunces',Georgia,serif; --font-body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body);
+    font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;}
+  .bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse at 25% 15%,#EDE5FB 0,transparent 55%),
+               radial-gradient(ellipse at 75% 85%,#F8E5EE 0,transparent 60%),var(--bg);}
+  .wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 24px 80px;}
+  .topnav{position:sticky;top:14px;z-index:50;margin:14px auto 0;}
+  .topnav-inner{background:var(--glass);backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--border);border-radius:20px;padding:11px 18px;
+    display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);}
+  .nav-back{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;
+    color:var(--muted);text-decoration:none;font-size:13.5px;font-weight:500;transition:.18s;}
+  .nav-back:hover{background:rgba(255,255,255,0.5);color:var(--text);}
+  .nav-logo{font-family:var(--font-display);font-size:17px;color:var(--text);
+    text-decoration:none;margin-left:auto;}
+  .nav-logo em{font-style:italic;color:var(--accent);}
+  header.hero{text-align:center;margin:40px 0 28px;}
+  header.hero h1{font-family:var(--font-display);font-weight:500;font-size:34px;letter-spacing:-.01em;}
+  header.hero p{color:var(--muted);margin-top:8px;}
+  .tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:26px;}
+  .tab{padding:9px 16px;border-radius:100px;border:1px solid var(--border);
+    background:var(--glass);color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;
+    text-decoration:none;transition:.18s;}
+  .tab:hover{color:var(--text);}
+  .tab.active{background:linear-gradient(135deg,var(--accent-soft),var(--accent));
+    color:#fff;border-color:transparent;box-shadow:0 6px 18px rgba(76,41,211,.28);}
+  .doc{background:var(--glass);backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--border);border-radius:24px;padding:38px 40px;box-shadow:var(--shadow);
+    display:none;}
+  .doc.show{display:block;animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .doc h2{font-family:var(--font-display);font-weight:500;font-size:25px;margin-bottom:6px;}
+  .doc .meta{color:var(--dim);font-size:12.5px;margin-bottom:22px;}
+  .doc h3{font-size:16px;font-weight:700;margin:24px 0 8px;}
+  .doc p{margin-bottom:12px;color:#2b2545;}
+  .doc ul{margin:0 0 12px 22px;}
+  .doc li{margin-bottom:6px;color:#2b2545;}
+  .req{background:rgba(76,41,211,.06);border:1px dashed rgba(76,41,211,.3);
+    border-radius:14px;padding:16px 18px;margin:18px 0;font-size:13.5px;color:var(--muted);}
+  .req strong{color:var(--accent);}
+  .ph{background:#fff7d6;border-radius:5px;padding:0 5px;font-weight:600;color:#7a5a00;}
+  @media(max-width:600px){
+    .doc{padding:26px 22px}
+    .wrap{padding:0 14px 60px}
+    body{font-size:16px;}                              /* комфортная читалка */
+    .tab{padding:11px 18px; min-height:44px; display:inline-flex; align-items:center;}
+  }
+  body { padding-top: env(safe-area-inset-top); }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="wrap">
+  <nav class="topnav"><div class="topnav-inner">
+    <a href="/" class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      На главную</a>
+    <a href="/" class="nav-logo">карточка <em>Ai</em></a>
+  </div></nav>
+
+  <header class="hero">
+    <h1>Правовые документы</h1>
+    <p>Политика конфиденциальности, согласие на обработку ПДн и публичная оферта</p>
+  </header>
+
+  <div class="tabs">
+    <a class="tab active" data-doc="privacy" href="#privacy">Политика конфиденциальности</a>
+    <a class="tab" data-doc="consent" href="#consent">Согласие на обработку ПДн</a>
+    <a class="tab" data-doc="offer" href="#offer">Публичная оферта</a>
+  </div>
+
+  <div class="req">
+    <strong>Перед публикацией:</strong> подставьте реквизиты вашего юрлица/ИП вместо
+    жёлтых плейсхолдеров (<span class="ph">[…]</span>) — наименование, ИНН/ОГРН(ИП),
+    юр. адрес, e-mail и телефон поддержки. Документы — типовой шаблон под 152-ФЗ и
+    ст. 435–438 ГК РФ; финальную редакцию согласуйте с юристом.
+  </div>
+
+  <!-- ========== POLICY ========== -->
+  <article class="doc show" id="privacy">
+    <h2>Политика в отношении обработки персональных данных</h2>
+    <div class="meta">Редакция от 31.05.2026 · в соответствии с Федеральным законом № 152-ФЗ «О персональных данных»</div>
+
+    <h3>1. Общие положения</h3>
+    <p>Настоящая Политика определяет порядок обработки и защиты персональных данных
+      пользователей сервиса «карточка Ai» (далее — Сервис). Оператор персональных
+      данных: <span class="ph">[Наименование ИП/ООО]</span>, ИНН <span class="ph">[ИНН]</span>,
+      ОГРН(ИП) <span class="ph">[ОГРН]</span> (далее — Оператор).</p>
+
+    <h3>2. Какие данные мы обрабатываем</h3>
+    <ul>
+      <li>адрес электронной почты (e-mail) — для входа, чеков и уведомлений;</li>
+      <li>имя (если указано пользователем) — для обращения;</li>
+      <li>хеш пароля (сам пароль не хранится и не передаётся);</li>
+      <li>история операций с балансом карточек и платежей;</li>
+      <li>технические данные: IP-адрес, дата и время действий, сведения о браузере.</li>
+    </ul>
+    <p><strong>Платёжные данные карт мы не получаем и не храним.</strong> Реквизиты
+      карты вводятся на защищённой странице платёжного провайдера и Оператору не
+      передаются.</p>
+
+    <h3>3. Цели обработки</h3>
+    <ul>
+      <li>предоставление доступа к функциям Сервиса и исполнение договора (оферты);</li>
+      <li>проведение расчётов и формирование кассовых чеков (54-ФЗ);</li>
+      <li>информирование о статусе заказов и работе Сервиса;</li>
+      <li>исполнение требований законодательства РФ.</li>
+    </ul>
+
+    <h3>4. Правовые основания</h3>
+    <p>Обработка осуществляется на основании согласия субъекта ПДн, а также для
+      исполнения договора, стороной которого является пользователь.</p>
+
+    <h3>5. Сроки и хранение</h3>
+    <p>Персональные данные хранятся на территории Российской Федерации в течение
+      срока действия аккаунта и далее в сроки, установленные законодательством
+      (в т.ч. бухгалтерским и налоговым). По достижении целей данные удаляются или
+      обезличиваются.</p>
+
+    <h3>6. Права пользователя</h3>
+    <ul>
+      <li>получать сведения об обработке своих ПДн;</li>
+      <li>требовать уточнения, блокирования или удаления данных;</li>
+      <li>отозвать согласие и удалить аккаунт (кнопка «Удалить аккаунт» в профиле).</li>
+    </ul>
+
+    <h3>7. Контакты</h3>
+    <p>Запросы по обработке ПДн: <span class="ph">[e-mail поддержки]</span>,
+      тел. <span class="ph">[телефон]</span>.</p>
+  </article>
+
+  <!-- ========== CONSENT ========== -->
+  <article class="doc" id="consent">
+    <h2>Согласие на обработку персональных данных</h2>
+    <div class="meta">Акцептуется при регистрации проставлением отметки</div>
+    <p>Регистрируясь в Сервисе «карточка Ai», я, субъект персональных данных,
+      свободно, своей волей и в своём интересе даю согласие
+      <span class="ph">[Наименование ИП/ООО]</span> (ИНН <span class="ph">[ИНН]</span>)
+      на обработку моих персональных данных:</p>
+    <ul>
+      <li><strong>Перечень данных:</strong> e-mail, имя, IP-адрес, история операций и платежей.</li>
+      <li><strong>Перечень действий:</strong> сбор, запись, систематизация, накопление,
+        хранение, уточнение, использование, передача оператору фискализации и
+        платёжному провайдеру, обезличивание, блокирование, удаление.</li>
+      <li><strong>Способы обработки:</strong> автоматизированная и неавтоматизированная.</li>
+      <li><strong>Срок действия:</strong> до достижения целей обработки либо до отзыва согласия.</li>
+    </ul>
+    <p>Согласие может быть отозвано путём направления запроса на
+      <span class="ph">[e-mail поддержки]</span> или удаления аккаунта в профиле.</p>
+
+    <h3>Согласие на получение уведомлений</h3>
+    <p>Я согласен(на) получать на указанный e-mail сервисные сообщения (статусы
+      заказов, чеки) и, при включённой опции, информационные рассылки. Отказ от
+      рассылок доступен в настройках профиля.</p>
+  </article>
+
+  <!-- ========== OFFER ========== -->
+  <article class="doc" id="offer">
+    <h2>Публичная оферта (договор)</h2>
+    <div class="meta">Редакция от 31.05.2026 · ст. 435–438 ГК РФ</div>
+
+    <h3>1. Предмет</h3>
+    <p>Настоящий документ является публичной офертой <span class="ph">[Наименование ИП/ООО]</span>
+      (Исполнитель) на оказание услуг по генерации изображений карточек товаров и
+      сопутствующего контента с помощью Сервиса «карточка Ai». Акцепт оферты —
+      регистрация и/или оплата.</p>
+
+    <h3>2. Карточки и их использование</h3>
+    <ul>
+      <li>Внутренняя единица учёта Сервиса — <strong>карточка</strong>. Создание одной
+        карточки-дизайна списывает одну карточку с баланса
+        (тарифы указываются в интерфейсе).</li>
+      <li>Карточки приобретаются пакетами или произвольным количеством через ползунок;
+        чем больше объём, тем ниже цена за карточку.</li>
+      <li>Карточки не являются денежными средствами и электронным средством платежа,
+        не подлежат обмену на деньги и используются только внутри Сервиса.</li>
+      <li>Купленные карточки не сгорают по времени (если иное не указано для бонусных
+        начислений).</li>
+    </ul>
+
+    <h3>3. Стоимость и оплата</h3>
+    <p>Стоимость отображается в интерфейсе до оплаты. Оплата — разовый платёж через
+      платёжного провайдера. Фискальный чек направляется на e-mail в соответствии с
+      Федеральным законом № 54-ФЗ.</p>
+
+    <h3>4. Возврат</h3>
+    <p>Возврат денежных средств за неиспользованные карточки осуществляется по
+      заявлению на <span class="ph">[e-mail поддержки]</span> в соответствии с
+      Законом РФ «О защите прав потребителей». Использованные (списанные на
+      генерацию) карточки возврату не подлежат.</p>
+
+    <h3>5. Ответственность</h3>
+    <p>Сервис предоставляется «как есть». Исполнитель не гарантирует коммерческий
+      результат от использования сгенерированного контента. Пользователь отвечает за
+      правомерность загружаемых материалов.</p>
+
+    <h3>6. Реквизиты Исполнителя</h3>
+    <p><span class="ph">[Наименование ИП/ООО]</span> · ИНН <span class="ph">[ИНН]</span> ·
+      ОГРН(ИП) <span class="ph">[ОГРН]</span> · <span class="ph">[юр. адрес]</span> ·
+      <span class="ph">[e-mail]</span></p>
+  </article>
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const docs = document.querySelectorAll('.doc');
+  function show(id){
+    tabs.forEach(t=>t.classList.toggle('active', t.dataset.doc===id));
+    docs.forEach(d=>d.classList.toggle('show', d.id===id));
+  }
+  tabs.forEach(t=>t.addEventListener('click', e=>{ show(t.dataset.doc); }));
+  const h = (location.hash||'').replace('#','');
+  if (['privacy','consent','offer'].includes(h)) show(h);
+</script>
+</body>
+</html>

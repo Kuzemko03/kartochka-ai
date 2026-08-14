@@ -1,0 +1,51 @@
+# ── секреты ──────────────────────────────────────────────────────────────────
+config.json
+config.server.json
+*.key
+*.pem
+.env
+.env.*
+site/proxies.txt
+
+# ── подпись Android-приложения (НИКОГДА не коммитить) ────────────────────────
+*.keystore
+*.jks
+keystore.properties
+local.properties
+
+# ── пользовательские данные ──────────────────────────────────────────────────
+site/data/
+site/output/
+site/tmp/
+site/_backups/
+site/downloaded_files/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite3
+
+# ── сборки и артефакты ───────────────────────────────────────────────────────
+*.apk
+*.aab
+*.tar.gz
+android/build/
+android/app/build/
+android/.gradle/
+android/.idea/
+.gradle/
+build/
+
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ── прочее ───────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.claude/settings.local.json
+*.log
