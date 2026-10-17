@@ -7338,6 +7338,7 @@
   }
 
   function scrollToBottom(opts) {
+    if (document.body.classList.contains('demo-result')) return;
     opts = opts || {};
     const force = opts.force === true;
     _attachAutoScroll();
@@ -9114,8 +9115,35 @@
       return;
     }
     state._exampleRunning = true;
-    try { await runExampleWalkthrough(data); }
+    try {
+      if (document.body.classList.contains('demo-result')) await showExampleResult(data);
+      else await runExampleWalkthrough(data);
+    }
     finally { state._exampleRunning = false; }
+  }
+
+  async function showExampleResult(data) {
+    state._isExample = true;
+    state.activeChatId = null;
+    transitionToChat({skipChatEntry:true});
+    await _demoPreloadImages(data);
+    await sleep(620);
+    const prod = data.product || {};
+    const chat = document.getElementById('chat');
+    chat.innerHTML = `<section class="demo-result-intro"><h1>Из одного фото — готовая карточка товара</h1><p>${escHtmlSafe(data.concept || '')}</p><div class="demo-result-links"><a href="/">Посмотреть весь процесс →</a><a href="#demo-description">К описанию товара ↓</a><button type="button" onclick="downloadCard()">Скачать 4 карточки</button></div></section>
+      <div class="demo-input"><img src="${escAttr(prod.input_photo)}" alt="Исходное фото товара"><div><span>Исходный товар</span><strong>${escHtmlSafe(prod.name)}</strong></div></div>`;
+    const id = 'example-' + Date.now();
+    prepareCardSlots(id, data.cards.length);
+    data.cards.forEach((url, i) => placeCardImage(id, url, i));
+    state._lastDescription = data.description;
+    if (data.description) {
+      chat.insertAdjacentHTML('beforeend', '<div id="demo-description"></div>');
+      _renderDescriptionPanel(id, data.description, '');
+    }
+    const products = data.competitors_demo?.products || [];
+    chat.insertAdjacentHTML('beforeend', `<details class="demo-competitors"><summary>Конкуренты и стратегия оформления</summary><p style="font-size:12px;margin-bottom:12px;color:var(--text-muted)">Сохранённый пример анализа; цены и отзывы не обновляются.</p>${renderCompetitorCards(products)}${renderAnalysisResult(data.analysis || {})}</details>`);
+    setFlowStep(0);
+    _scrollCandidates().forEach(el => { if (el) el.scrollTop = 0; });
   }
 
   // ── Демо: предзагрузка картинок + интерактивные паузы ─────────────────────
@@ -9181,7 +9209,7 @@
     transitionToChat({ skipChatEntry: true });
     // Предзагружаем все ассеты showcase в фоне — к показу конкурентов/карточек
     // они уже в кеше (никаких «пустых боксов с цифрами» и доезжающих карточек).
-    _demoPreloadImages(data);
+    await _demoPreloadImages(data);
     await sleep(620);   // ждём, пока стартовый экран спрячется (там setTimeout 500ms)
 
     const chat = document.getElementById('chat');
@@ -11795,6 +11823,8 @@
   }
 
   function renderCompetitorCards(products) {
+    // The competitor list can render before the analysis panel creates these styles.
+    ensureAnalysisStyles();
     return `<div class="an-comp-grid">${products.map((p, i) => {
       const photo = p.photos && p.photos[0] ? p.photos[0] : '';
       const price = p.price ? Math.round(p.price).toLocaleString('ru-RU') + ' ₽' : '—';

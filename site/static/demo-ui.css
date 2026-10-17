@@ -1,0 +1,24 @@
+body.portfolio-demo{padding-top:0!important}
+.demo-toolbar{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:12px 24px;background:var(--glass-2);border-bottom:1px solid var(--glass-border);color:var(--text-muted);font:12px/1.5 var(--font-body)}
+.demo-toolbar nav{display:flex;gap:8px;flex-wrap:wrap}
+.demo-toolbar a{color:var(--accent-bright);padding:6px 12px;border:1px solid var(--glass-border);border-radius:20px;text-decoration:none;font-weight:600}
+.portfolio-demo .header-wrap{position:relative;top:0}
+.portfolio-demo #balanceBtn,.portfolio-demo .header-right .user-avatar,.portfolio-demo .photo-edit-btn,.portfolio-demo #cardLightboxEdit{display:none!important}
+.demo-result-intro{padding:24px 0 16px;color:var(--text);line-height:1.6}
+.demo-result-intro h1{font-size:clamp(24px,4vw,34px);line-height:1.2;margin-bottom:12px}
+.demo-result-intro p{color:var(--text-muted);max-width:600px}
+.demo-result-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.demo-result-links a,.demo-result-links button{color:var(--accent-bright);text-decoration:none;border:1px solid var(--glass-border);background:var(--glass-2);border-radius:12px;padding:9px 14px;font-size:13px}
+.portfolio-demo.demo-result .photo-grid[data-count="4"]{max-width:800px;width:100%;gap:16px}
+.portfolio-demo.demo-result .result-bubble{width:100%;max-width:800px}
+.portfolio-demo.demo-result .msg.ai{width:100%}
+.portfolio-demo.demo-result .msg-avatar{display:none}
+.portfolio-demo.demo-result #chat{max-width:880px;margin:auto;width:100%}
+.portfolio-demo.demo-result .chat-input-area{display:none}
+.portfolio-demo .desc-edit-btn{display:none!important}
+.demo-input{display:flex;align-items:center;gap:18px;margin:0 0 24px;padding:16px;border:1px solid var(--glass-border);border-radius:18px;background:var(--glass-2)}
+.demo-input img{width:84px;height:84px;object-fit:cover;border-radius:12px}
+.demo-input span{display:block;color:var(--text-muted);font-size:12px;margin-bottom:6px}
+.demo-competitors{margin:24px 0;border:1px solid var(--glass-border);border-radius:18px;background:var(--glass-2);padding:18px}
+.demo-competitors summary{cursor:pointer;font-weight:600;margin-bottom:10px}
+@media(max-width:600px){.demo-toolbar{padding:10px 16px}.demo-toolbar nav{width:100%}.demo-input{gap:12px}.portfolio-demo.demo-result .photo-grid[data-count="4"]{gap:8px}.demo-result-intro{padding-top:12px}}

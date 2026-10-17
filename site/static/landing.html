@@ -1204,9 +1204,9 @@
   }
   .hero-fan-badge svg { color: var(--c-mint); }
 
-  /* Галерея пака — 6 реальных карточек */
+  /* Галерея сохранённого пака — четыре карточки */
   .pack-grid {
-    display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px;
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;
   }
   .pack-item { display: flex; flex-direction: column; gap: 10px; }
   .pack-item .rc-frame { transition: transform 300ms cubic-bezier(0.22,1,0.36,1), box-shadow 300ms; }
@@ -1217,7 +1217,7 @@
   }
   .pack-cap span { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--accent); font-family: var(--font-mono); margin-bottom: 2px; }
-  @media (max-width: 900px) { .pack-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 900px) { .pack-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 520px) { .pack-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
 
   /* ===== Capabilities — компактная сетка возможностей (из бывших «6 инструментов») ===== */
@@ -1654,7 +1654,7 @@
             <div class="swap-proof-cards">
               <div class="rc-frame"><img src="/static/assets/example/card_2.jpg" alt="Карточка Wildberries: эргономичная ручка кружки" loading="lazy"></div>
               <div class="rc-frame"><img src="/static/assets/example/card_1.jpg" alt="Главная карточка Wildberries для керамической кружки" loading="lazy"></div>
-              <div class="rc-frame"><img src="/static/assets/example/card_5.jpg" alt="Карточка Wildberries: подарочная упаковка" loading="lazy"></div>
+              <div class="rc-frame"><img src="/static/assets/example/card_3.jpg" alt="Карточка Wildberries: сервировка и уют" loading="lazy"></div>
             </div>
             <div class="swap-proof-cap">Одно фото&nbsp;→ готовый пак карточек</div>
           </div>
@@ -1870,24 +1870,16 @@
           <div class="pack-cap"><span>01 · Главная</span>Цепляет в выдаче</div>
         </div>
         <div class="pack-item">
-          <div class="rc-frame"><img src="/static/assets/example/card_2.jpg" alt="Карточка: эргономичная ручка" loading="lazy"></div>
-          <div class="pack-cap"><span>02 · Удобство</span>Ложится в ладонь</div>
+          <div class="rc-frame"><img src="/static/assets/example/card_2.jpg" alt="Карточка: рельеф и глазурь крупным планом" loading="lazy"></div>
+          <div class="pack-cap"><span>02 · Детали</span>Фактура крупным планом</div>
         </div>
         <div class="pack-item">
-          <div class="rc-frame"><img src="/static/assets/example/card_3.jpg" alt="Карточка: качество глазури" loading="lazy"></div>
-          <div class="pack-cap"><span>03 · Качество</span>Не впитывает запах</div>
+          <div class="rc-frame"><img src="/static/assets/example/card_3.jpg" alt="Карточка: сервировка стола" loading="lazy"></div>
+          <div class="pack-cap"><span>03 · Сценарий</span>Уютная сервировка</div>
         </div>
         <div class="pack-item">
-          <div class="rc-frame"><img src="/static/assets/example/card_4.jpg" alt="Карточка: толстые стенки" loading="lazy"></div>
-          <div class="pack-cap"><span>04 · Выгода</span>Стенки 4 мм — тепло дольше</div>
-        </div>
-        <div class="pack-item">
-          <div class="rc-frame"><img src="/static/assets/example/card_5.jpg" alt="Карточка: подарочная упаковка" loading="lazy"></div>
-          <div class="pack-cap"><span>05 · Подарок</span>В подарочной коробке</div>
-        </div>
-        <div class="pack-item">
-          <div class="rc-frame"><img src="/static/assets/example/card_6.jpg" alt="Карточка-инфографика: сравнение" loading="lazy"></div>
-          <div class="pack-cap"><span>06 · Сравнение</span>5 причин выбрать</div>
+          <div class="rc-frame"><img src="/static/assets/example/card_4.jpg" alt="Карточка: цветочный узор" loading="lazy"></div>
+          <div class="pack-cap"><span>04 · Дизайн</span>Рельефный цветочный узор</div>
         </div>
       </div>
 

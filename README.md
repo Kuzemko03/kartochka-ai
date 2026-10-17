@@ -173,8 +173,36 @@ deploy/                    systemd + nginx + скрипты выката
 
 ## Запуск локально
 
+### Демо без API-ключей
+
+Для просмотра проекта достаточно Python 3.11+ и двух зависимостей. В Windows можно запустить `START_DEMO.cmd` двойным кликом или выполнить в PowerShell:
+
+```powershell
+git clone https://github.com/Kuzemko03/kartochka-ai.git
+cd kartochka-ai
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-demo.txt
+.\.venv\Scripts\python.exe demo.py
+```
+
+В macOS/Linux после клонирования:
+
 ```bash
-git clone <this-repo> && cd kartochka
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-demo.txt
+.venv/bin/python demo.py
+```
+
+Готовый результат: [http://127.0.0.1:8082/?demo=result](http://127.0.0.1:8082/?demo=result). Пошаговый пример: [http://127.0.0.1:8082](http://127.0.0.1:8082) — кнопка «Посмотреть пример · бесплатно». Доступны фотографии товара и конкурентов, четыре готовые карточки, просмотр крупным планом, скачивание и SEO-описание. Новая генерация, вход и платежи отключены. База данных и конфиг с ключами не нужны. Остановка сервера: Ctrl+C.
+
+### Полный backend
+
+Демо выше запускается отдельно от production backend. В текущей публичной копии `site/server.py` импортирует отсутствующие `wb_token_pool` и `wb_smart_client`, поэтому полный сервер требует восстановления этих модулей и настройки внешних сервисов. Наличие ключей само по себе не исправляет эти импорты.
+
+Схема настройки полного приложения:
+
+```bash
+git clone https://github.com/Kuzemko03/kartochka-ai.git && cd kartochka-ai
 ```
 
 ```bash
